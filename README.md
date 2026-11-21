@@ -1,28 +1,17 @@
-# ML Interactive Lab — 交互式机器学习原理实验室
+# ML Study Monograph — 机器学习原理深度研学手册
 
-一个纯静态、零后端成本、可直接部署到 Vercel / Cloudflare Pages 的交互式机器学习原理可视化与实验平台，覆盖现代机器学习全脉络（Part 0 – Part 5）：
+面向深度学习与机器学习课程的系统化交互式研学手册（L01–L11），以 Distill.pub / CS231n 学术排版风格组织，聚焦攻克讲义晦涩推导、书面作业数学演算与工程代码实现。
 
-- **Part 0 · 概率论基础与信息论**：Entropy / Cross-Entropy / KL Divergence 非对称性、Beta-Binomial MLE vs MAP
-- **Part 1 · 机器学习基础**：多项式回归与 Ridge 正则化、Bias²–Variance 22 次重采样分解、判别式 Softmax 回归 vs 生成式分类 (LDA / QDA)
-- **Part 2 · 深度学习基础**：可交互计算图前向/反向传播 (Dead ReLU 演示)、SGD / Momentum / RMSProp / Adam 损失地形竞速、CNN 卷积核扫描器、ResNet / LSTM 梯度高速公路
-- **Part 3 · 高级深度学习**：Self-Attention 矩阵热力图与 BERT 双向 vs GPT 因果掩码、√d_k 缩放饱和实测、ViT Patch 切分与 CLIP 对称图文对比学习
-- **Part 4 · 图像生成模型**：VAE 2D 潜空间连续漫游与 β-ELBO 权衡、GAN 1D 博弈与 Mode Collapse、DDPM 扩散模型 vs Flow Matching 直线粒子流场对比
-- **Part 5 · 强化学习导论**：可编辑 GridWorld 迷宫（Value Iteration & Q-Learning）、PPO Clipped Surrogate 裁剪目标函数
+## 核心模块
 
-## 核心特性
+1. **零跳步交互数学推导链 (`DerivationChain`)**：覆盖 OLS/Ridge 矩阵微积分、高斯 MLE = MSE、Logistic/Softmax 交叉熵梯度、双高斯闭式 KL、Naive Bayes、Bias-Variance 三项分解、多层矩阵反向传播、Adam 偏差修正、ResNet 梯度高速公路、RNN/LSTM BPTT、Self-Attention √d_k 方差证明、CLIP InfoNCE、VAE ELBO、GAN 最优判别器与 JSD、DDPM 一步前向加噪、Policy Gradient Theorem 与 Baseline 无偏证明。
+2. **可编辑矩阵与梯度数值验算器 (`Verifiers`)**：支持直接修改输入矩阵与超参数，实时展开全部中间矩阵与精确数值（OLS/Ridge、Logistic 单步 Batch GD、Naive Bayes Laplace 平滑、Monte Carlo Bias-Variance 分解、MLP 前向/反向 + 数值梯度检查、BatchNorm/LayerNorm & AdamW、2D Conv + ReLU & FLOPs、LSTM 门控衰减、Self-Attention 全矩阵、CLIP 对比矩阵、VAE/GAN/DDPM/Flow、TD Q-Learning/SARSA & PPO 裁剪）。
+3. **公式 ↔ 代码精确映射 + Pyodide 浏览器验证**：逐行绑定数学符号与 NumPy/PyTorch 实现并标注张量维度，内置浏览器端 Pyodide NumPy 实测验证脚本与高频作业踩坑警示。
 
-1. **60fps 实时交互实验室**：原生 TypeScript + Canvas/SVG 实时数值演算，拖动滑块或点击画布零延迟反馈。
-2. **公式 ↔ 代码双向联动**：基于 KaTeX `\htmlClass` 精确绑定数学公式子表达式与 NumPy / PyTorch 实现代码，附张量维度（Shape Trace）与步进拆解。
-3. **浏览器内真实运行 Python / NumPy**：基于 Pyodide (WebAssembly) + Web Worker，零后端服务器，支持在线修改代码并自动渲染曲线图表。
-
-## 本地开发与构建
+## 开发与构建
 
 ```bash
 pnpm install
-pnpm dev      # 本地开发预览
-pnpm build    # TypeScript 严格检查 + 生产构建
+pnpm dev
+pnpm build
 ```
-
-## 技术栈
-
-Vite 6 · React 19 · TypeScript · Tailwind CSS v4 · KaTeX · CodeMirror 6 · Pyodide (WebAssembly)

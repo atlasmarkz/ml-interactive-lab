@@ -205,53 +205,38 @@ export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) =>
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 bg-stone-50/70 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
         <div>
           <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+            <Terminal className="h-4 w-4 text-stone-700 dark:text-zinc-300" />
+            <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
               {spec.title}
             </h3>
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-              Pyodide · 浏览器内真实运行 NumPy
+            <span className="rounded border border-stone-300 bg-white px-1.5 py-0.5 font-mono text-[10px] text-stone-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+              Pyodide · NumPy
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{spec.description}</p>
+          <p className="mt-0.5 text-xs text-stone-500 dark:text-zinc-400">{spec.description}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCode(spec.starterCode)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-1.5 rounded-md border border-stone-300 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            重置代码
+            重置
           </button>
           <button
             onClick={handleRun}
             disabled={running}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-60 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-md bg-stone-900 px-3.5 py-1 text-xs font-medium text-white hover:bg-stone-800 disabled:opacity-60 transition dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer"
           >
             {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
-            {running ? '运行中...' : '运行 Python'}
+            {running ? '运行中...' : '运行验证'}
           </button>
         </div>
       </div>
-
-      {/* Tips */}
-      {spec.tips && spec.tips.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/70 bg-blue-50/40 px-5 py-2 text-xs text-blue-800 dark:border-slate-800 dark:bg-blue-950/20 dark:text-blue-300">
-          <span className="font-semibold">动手试一试：</span>
-          {spec.tips.map((tip, i) => (
-            <span
-              key={i}
-              className="rounded-md bg-white/80 px-2 py-0.5 text-[11px] border border-blue-200/70 dark:bg-slate-900 dark:border-blue-900/60"
-            >
-              {tip}
-            </span>
-          ))}
-        </div>
-      )}
 
       {/* Editor */}
       <div className="border-b border-slate-200 dark:border-slate-800 text-xs">

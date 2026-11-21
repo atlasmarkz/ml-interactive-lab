@@ -22,14 +22,11 @@ export default defineConfig({
           if (id.includes('node_modules/@codemirror') || id.includes('node_modules/@uiw')) {
             return 'codemirror-vendor';
           }
-          if (id.includes('/components/Labs3D/')) {
-            return 'studios-3d';
-          }
-          if (id.includes('/components/Labs/')) {
-            return 'labs-2d';
+          if (id.includes('/components/Verifiers/')) {
+            return 'verifiers';
           }
           if (id.includes('/data/')) {
-            return 'curriculum-data';
+            return 'lectures-data';
           }
           return undefined;
         },

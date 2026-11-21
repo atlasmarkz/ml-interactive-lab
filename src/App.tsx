@@ -26,7 +26,7 @@ export const App: React.FC = () => {
       <Layout isDark={isDark} onToggleDark={() => setIsDark((d) => !d)}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/part/:slug" element={<ModulePage isDark={isDark} />} />
+          <Route path="/lecture/:slug" element={<ModulePage isDark={isDark} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

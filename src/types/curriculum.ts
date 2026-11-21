@@ -6,8 +6,8 @@ export interface FormulaTerm {
   role: SemanticRole;
   shape: string;
   explanation: string;
-  numpyLines: number[]; // 1-indexed line numbers in numpyCode
-  pytorchLines?: number[]; // 1-indexed line numbers in pytorchCode
+  numpyLines: number[];
+  pytorchLines?: number[];
 }
 
 export interface FormulaCodeSpec {
@@ -20,67 +20,72 @@ export interface FormulaCodeSpec {
   terms: FormulaTerm[];
 }
 
-export interface SandboxSpec {
+export interface DerivationStep {
+  rule: string; // e.g. "Chain Rule", "Log-Derivative Trick", "Add & Subtract E[h_S]"
+  latex: string;
+  justification: string;
+}
+
+export interface DerivationSpec {
   id: string;
   title: string;
-  description: string;
-  starterCode: string;
-  tips?: string[];
+  goal: string;
+  steps: DerivationStep[];
+  conclusion: string;
 }
 
-export interface ThoughtQuestion {
-  question: string;
-  answer: string;
-}
-
-export interface DeepDiveConcept {
+export interface ConceptBlock {
   heading: string;
-  badge?: string;
-  summary: string;
+  body: string;
   latex?: string;
-  bullets: string[];
+  points?: string[];
   table?: {
     headers: string[];
     rows: string[][];
   };
 }
 
-export interface LectureSection {
-  id: string;
-  lectureTag: string; // e.g. "L01 · 回归与正则化"
+export interface PitfallNote {
   title: string;
-  concepts: DeepDiveConcept[];
+  detail: string;
 }
 
-export interface WorkedExampleStep {
+export interface SandboxSpec {
+  id: string;
   title: string;
-  explanation: string;
-  latex?: string;
+  description: string;
+  starterCode: string;
 }
 
-export interface WorkedExample {
-  id: string;
-  tag: string; // e.g. "高频手算题型"
-  title: string;
-  problem: string;
-  problemLatex?: string;
-  steps: WorkedExampleStep[];
-  keyTakeaway: string;
-}
+export type VerifierId =
+  | 'l01-ols-ridge'
+  | 'l02-1-logistic-gd'
+  | 'l02-2-nb-surrogate'
+  | 'l03-bias-variance'
+  | 'l04-mlp-backprop'
+  | 'l05-norm-opt'
+  | 'l06-conv-flops'
+  | 'l07-lstm-rnn'
+  | 'l08-self-attention'
+  | 'l09-vit-clip'
+  | 'l10-gen-models'
+  | 'l11-rl-bellman-ppo';
 
-export interface PartModule {
+export interface LectureModule {
   id: string;
-  partNumber: number;
+  code: string; // e.g. "L01", "L02.1"
+  partGroup: 'Part I · Statistical & Linear Foundations' | 'Part II · Deep Learning Foundations' | 'Part III · Transformers, Generative Models & RL';
   slug: string;
   titleZh: string;
   titleEn: string;
-  tagline: string;
-  topics: string[];
-  accentColor: string;
-  keyTakeaways: string[];
+  abstract: string;
+  readingChecklist: string[];
+  verifierId: VerifierId;
+  derivations: DerivationSpec[];
+  concepts: ConceptBlock[];
   formulaSpecs: FormulaCodeSpec[];
-  sandbox: SandboxSpec;
-  thoughtQuestions: ThoughtQuestion[];
+  pitfalls: PitfallNote[];
+  sandbox?: SandboxSpec;
 }
 
 export interface PlotSeriesData {
