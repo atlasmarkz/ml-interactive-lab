@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
+import { InlineMath } from '../RichText';
 
 // Exact Gaussian elimination with partial pivoting returning both solution and matrix inverse
 function solveAndInvert(A: number[][], b: number[]): { sol: number[]; inv: number[][] | null } {
@@ -408,18 +409,18 @@ export const LinearLogisticVerifier: React.FC<LinearLogisticVerifierProps> = ({ 
           {/* Exact Per-Sample Computation Table */}
           <div className="lg:col-span-7 space-y-3">
             <div className="rounded-md border border-stone-200 bg-stone-50/60 p-3.5 dark:border-zinc-800 dark:bg-zinc-950/60">
-              <div className="mb-2 font-mono text-[11px] font-semibold text-stone-600 dark:text-zinc-400">
-                逐样本前向概率与误差项 (ŷ_i − y_i) 明细表
+              <div className="mb-2 text-xs font-semibold text-stone-600 dark:text-zinc-400">
+                逐样本前向概率与误差项 <InlineMath latex="(\hat{y}_i - y_i)" /> 明细表
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse font-mono text-xs">
                   <thead>
-                    <tr className="border-b border-stone-200 text-[10px] text-stone-400 dark:border-zinc-800">
-                      <th className="py-1 text-left">i</th>
-                      <th className="py-1 text-right">z = wᵀx</th>
-                      <th className="py-1 text-right">ŷ = σ(z)</th>
-                      <th className="py-1 text-right">ŷ − y</th>
-                      <th className="py-1 text-right">CE Loss_i</th>
+                    <tr className="border-b border-stone-200 text-[11px] text-stone-500 dark:border-zinc-800">
+                      <th className="py-1.5 text-left"><InlineMath latex="i" /></th>
+                      <th className="py-1.5 text-right"><InlineMath latex={String.raw`z_i = \mathbf{w}^\top \mathbf{x}_i`} /></th>
+                      <th className="py-1.5 text-right"><InlineMath latex={String.raw`\hat{y}_i = \sigma(z_i)`} /></th>
+                      <th className="py-1.5 text-right"><InlineMath latex={String.raw`\hat{y}_i - y_i`} /></th>
+                      <th className="py-1.5 text-right"><InlineMath latex={String.raw`L_i`} /></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -439,17 +440,17 @@ export const LinearLogisticVerifier: React.FC<LinearLogisticVerifierProps> = ({ 
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
               <div className="rounded-md border border-stone-200 p-3 dark:border-zinc-800">
-                <div className="text-[10px] text-stone-400">当前平均损失 L(w⁽⁰⁾)</div>
+                <div className="text-[11px] text-stone-500">当前平均损失 <InlineMath latex={String.raw`L(\mathbf{w}^{(0)})`} /></div>
                 <div className="mt-1 text-sm font-semibold">{logResult.avgLoss.toFixed(4)}</div>
               </div>
               <div className="rounded-md border border-stone-200 p-3 dark:border-zinc-800">
-                <div className="text-[10px] text-stone-400">梯度向量 ∇L(w⁽⁰⁾)</div>
+                <div className="text-[11px] text-stone-500">梯度向量 <InlineMath latex={String.raw`\nabla L(\mathbf{w}^{(0)})`} /></div>
                 <div className="mt-1 text-xs font-semibold text-red-700 dark:text-red-400">
                   [{logResult.grad.map((g) => g.toFixed(4)).join(', ')}]
                 </div>
               </div>
               <div className="rounded-md border border-stone-200 p-3 dark:border-zinc-800">
-                <div className="text-[10px] text-stone-400">更新后权重 w⁽¹⁾</div>
+                <div className="text-[11px] text-stone-500">更新后权重 <InlineMath latex={String.raw`\mathbf{w}^{(1)}`} /></div>
                 <div className="mt-1 text-xs font-semibold text-blue-700 dark:text-blue-400">
                   [{logResult.wNext.map((w) => w.toFixed(4)).join(', ')}]
                 </div>

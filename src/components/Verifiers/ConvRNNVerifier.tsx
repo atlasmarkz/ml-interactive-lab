@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { InlineMath } from '../RichText';
 
 interface ConvRNNVerifierProps {
   mode: 'l06-conv-flops' | 'l07-lstm-rnn';
@@ -279,24 +280,30 @@ export const ConvRNNVerifier: React.FC<ConvRNNVerifierProps> = ({ mode }) => {
           ))}
         </div>
 
-        <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-950/60 font-mono text-[11px] space-y-2">
+        <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-950/60 text-xs space-y-2">
           <div className="font-semibold text-stone-800 dark:text-zinc-200">单步门控计算明细</div>
-          <div>f_t = σ({zf.toFixed(1)}) = <strong>{lstmRes.f.toFixed(4)}</strong></div>
-          <div>i_t = σ({zi.toFixed(1)}) = <strong>{lstmRes.i.toFixed(4)}</strong></div>
-          <div>c̃_t = tanh({zc.toFixed(1)}) = <strong>{lstmRes.cTilde.toFixed(4)}</strong></div>
-          <div>o_t = σ({zo.toFixed(1)}) = <strong>{lstmRes.o.toFixed(4)}</strong></div>
+          <div><InlineMath latex={`f_t = \\sigma(${zf.toFixed(1)}) = ${lstmRes.f.toFixed(4)}`} /></div>
+          <div><InlineMath latex={`i_t = \\sigma(${zi.toFixed(1)}) = ${lstmRes.i.toFixed(4)}`} /></div>
+          <div><InlineMath latex={`\\tilde{c}_t = \\tanh(${zc.toFixed(1)}) = ${lstmRes.cTilde.toFixed(4)}`} /></div>
+          <div><InlineMath latex={`o_t = \\sigma(${zo.toFixed(1)}) = ${lstmRes.o.toFixed(4)}`} /></div>
           <div className="border-t border-stone-200 pt-2 dark:border-zinc-800 text-blue-700 dark:text-blue-400 font-semibold">
-            c_t = f_t·c_{'{t-1}'} + i_t·c̃_t = {lstmRes.cCurr.toFixed(4)}
+            <InlineMath latex={`c_t = f_t c_{t-1} + i_t \\tilde{c}_t = ${lstmRes.cCurr.toFixed(4)}`} />
           </div>
           <div className="text-emerald-700 dark:text-emerald-400 font-semibold">
-            h_t = o_t·tanh(c_t) = {lstmRes.hCurr.toFixed(4)}
+            <InlineMath latex={`h_t = o_t \\tanh(c_t) = ${lstmRes.hCurr.toFixed(4)}`} />
           </div>
-          <div className="border-t border-stone-200 pt-2 dark:border-zinc-800 space-y-1">
+          <div className="border-t border-stone-200 pt-2 dark:border-zinc-800 space-y-1.5">
             <div className="font-sans font-semibold text-stone-700 dark:text-zinc-300">
-              经过 T = {stepsT} 个时间步反向传播后的梯度留存比例：
+              经过 <InlineMath latex={`T = ${stepsT}`} /> 个时间步反向传播后的梯度留存比例：
             </div>
-            <div>LSTM 记忆通道 ∂c_T/∂c_0 ≈ f_t^T = <strong className="text-emerald-700 dark:text-emerald-400">{lstmRes.lstmGradAfterT.toExponential(2)}</strong></div>
-            <div>Vanilla RNN (设 |W_hh|={rnnW}) ≈ (W·tanh′)^T = <strong className="text-red-700 dark:text-red-400">{lstmRes.rnnGradAfterT.toExponential(2)}</strong></div>
+            <div>
+              LSTM 记忆通道 <InlineMath latex={`\\frac{\\partial c_T}{\\partial c_0} \\approx f_t^T`} /> ={' '}
+              <strong className="font-mono text-emerald-700 dark:text-emerald-400">{lstmRes.lstmGradAfterT.toExponential(2)}</strong>
+            </div>
+            <div>
+              Vanilla RNN (<InlineMath latex={`|W_{hh}|=${rnnW}`} />) <InlineMath latex={`\\approx (W\\tanh')^T`} /> ={' '}
+              <strong className="font-mono text-red-700 dark:text-red-400">{lstmRes.rnnGradAfterT.toExponential(2)}</strong>
+            </div>
           </div>
         </div>
       </div>

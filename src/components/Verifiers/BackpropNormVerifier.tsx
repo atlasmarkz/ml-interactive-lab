@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
+import { InlineMath } from '../RichText';
 
 interface BackpropNormVerifierProps {
   mode: 'l04-mlp-backprop' | 'l05-norm-opt';
@@ -254,14 +255,14 @@ export const BackpropNormVerifier: React.FC<BackpropNormVerifierProps> = ({ mode
 
             <div className="rounded-md border border-stone-200 bg-stone-50/60 p-3.5 dark:border-zinc-800 dark:bg-zinc-950/60 space-y-1.5">
               <div className="font-semibold text-stone-800 dark:text-zinc-200">Backward Pass (反向链式法则 & 数值验证)</div>
-              <div>1. δ₂ = p − y_onehot = [{bpRes.d2.map((v) => v.toFixed(4)).join(', ')}]</div>
-              <div>2. ∂L/∂h = δ₂ W₂ᵀ   = [{bpRes.dh.map((v) => v.toFixed(4)).join(', ')}]</div>
-              <div>3. δ₁ = (∂L/∂h) ⊙ 1[z₁&gt;0] = [{bpRes.d1.map((v) => v.toFixed(4)).join(', ')}]</div>
+              <div>1. <InlineMath latex={String.raw`\boldsymbol{\delta}_2 = \mathbf{p} - \mathbf{y}_{\text{onehot}}`} /> = [{bpRes.d2.map((v) => v.toFixed(4)).join(', ')}]</div>
+              <div>2. <InlineMath latex={String.raw`\frac{\partial L}{\partial \mathbf{h}} = \boldsymbol{\delta}_2 \mathbf{W}_2^\top`} /> = [{bpRes.dh.map((v) => v.toFixed(4)).join(', ')}]</div>
+              <div>3. <InlineMath latex={String.raw`\boldsymbol{\delta}_1 = \frac{\partial L}{\partial \mathbf{h}} \odot \mathbb{1}[\mathbf{z}_1 > 0]`} /> = [{bpRes.d1.map((v) => v.toFixed(4)).join(', ')}]</div>
               <div>
-                4. 解析 ∂L/∂W₁ = [[{bpRes.dW1[0].map((v) => v.toFixed(4)).join(', ')}], [{bpRes.dW1[1].map((v) => v.toFixed(4)).join(', ')}]]
+                4. 解析 <InlineMath latex={String.raw`\frac{\partial L}{\partial \mathbf{W}_1}`} /> = [[{bpRes.dW1[0].map((v) => v.toFixed(4)).join(', ')}], [{bpRes.dW1[1].map((v) => v.toFixed(4)).join(', ')}]]
               </div>
               <div className="text-emerald-700 dark:text-emerald-400 font-semibold">
-                5. 中心差分数值检验 max|解析 − 数值| = {bpRes.maxErr.toExponential(2)} (精确吻合)
+                5. 中心差分数值检验 <InlineMath latex={String.raw`\max|\text{解析} - \text{数值}|`} /> = {bpRes.maxErr.toExponential(2)} (精确吻合)
               </div>
             </div>
           </div>
@@ -332,7 +333,7 @@ export const BackpropNormVerifier: React.FC<BackpropNormVerifierProps> = ({ mode
             <div>μ  = [{normRes.means.map((v) => v.toFixed(3)).join(', ')}]</div>
             <div>σ² = [{normRes.vars.map((v) => v.toFixed(3)).join(', ')}]</div>
             <div className="pt-1 border-t border-stone-200 dark:border-zinc-800">
-              <div className="text-stone-500 mb-1">归一化结果 x̂ = (x − μ) / √(σ² + ε)：</div>
+              <div className="text-stone-500 mb-1">归一化结果 <InlineMath latex={String.raw`\hat{x} = \frac{x - \mu}{\sqrt{\sigma^2 + \varepsilon}}`} />：</div>
               {normRes.out.map((row, ri) => (
                 <div key={ri}>[{row.map((v) => (v >= 0 ? ` ${v.toFixed(3)}` : v.toFixed(3))).join(', ')}]</div>
               ))}

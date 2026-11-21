@@ -7,6 +7,7 @@ import { DerivationChain } from '../components/DerivationChain';
 import { FormulaCodeSync } from '../components/FormulaCodeSync';
 import { PythonSandbox } from '../components/PythonSandbox';
 import { MathFormula } from '../components/MathFormula';
+import { RichText } from '../components/RichText';
 import { LinearFigures } from '../components/Figures/LinearFigures';
 import { DeepOptFigures } from '../components/Figures/DeepOptFigures';
 import { TransformerGenRLFigures } from '../components/Figures/TransformerGenRLFigures';
@@ -92,8 +93,8 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed text-stone-700 dark:text-zinc-300">
-          {lec.abstract}
+        <p className="text-[14.5px] math-prose text-stone-700 dark:text-zinc-300">
+          <RichText text={lec.abstract} />
         </p>
 
         {/* Lecture Syllabus Checklist */}
@@ -102,13 +103,15 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
             <CheckSquare className="h-3.5 w-3.5" />
             本讲 PPT 核心知识点自查表 (Syllabus Scope)
           </div>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-stone-700 dark:text-zinc-300">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-[13px] leading-[1.75] text-stone-700 dark:text-zinc-300">
             {lec.readingChecklist.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 leading-relaxed">
-                <span className="font-mono text-[10px] text-stone-400 mt-0.5">
+              <li key={i} className="flex items-start gap-2">
+                <span className="font-mono text-[10px] text-stone-400 mt-1 shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <span>{item}</span>
+                <span>
+                  <RichText text={item} />
+                </span>
               </li>
             ))}
           </ul>
@@ -175,11 +178,11 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
               key={idx}
               className="rounded-lg border border-stone-200 bg-white p-5 dark:border-zinc-800 dark:bg-[#11151d] space-y-3"
             >
-              <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
-                {c.heading}
+              <h3 className="text-[15px] font-semibold text-stone-900 dark:text-zinc-100">
+                <RichText text={c.heading} />
               </h3>
-              <p className="text-xs sm:text-sm leading-relaxed text-stone-600 dark:text-zinc-300">
-                {c.body}
+              <p className="text-[13.5px] math-prose text-stone-600 dark:text-zinc-300">
+                <RichText text={c.body} />
               </p>
               {c.latex && (
                 <div className="rounded border border-stone-200/80 bg-stone-50/70 px-3 py-2 text-center dark:border-zinc-800 dark:bg-zinc-950/70">
@@ -187,20 +190,22 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
                 </div>
               )}
               {c.points && (
-                <ul className="space-y-1.5 text-xs leading-relaxed text-stone-700 dark:text-zinc-300 list-disc pl-5">
+                <ul className="space-y-2 text-[13px] math-prose text-stone-700 dark:text-zinc-300 list-disc pl-5">
                   {c.points.map((pt, pi) => (
-                    <li key={pi}>{pt}</li>
+                    <li key={pi}>
+                      <RichText text={pt} />
+                    </li>
                   ))}
                 </ul>
               )}
               {c.table && (
                 <div className="overflow-x-auto pt-1">
-                  <table className="w-full border-collapse text-xs">
+                  <table className="w-full border-collapse text-[13px]">
                     <thead>
                       <tr className="border-b border-stone-200 bg-stone-50 dark:border-zinc-800 dark:bg-zinc-900/70">
                         {c.table.headers.map((h, hi) => (
-                          <th key={hi} className="px-3 py-2 text-left font-semibold text-stone-700 dark:text-zinc-200">
-                            {h}
+                          <th key={hi} className="px-3 py-2.5 text-left font-semibold text-stone-700 dark:text-zinc-200">
+                            <RichText text={h} />
                           </th>
                         ))}
                       </tr>
@@ -211,13 +216,13 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
                           {row.map((cell, ci) => (
                             <td
                               key={ci}
-                              className={`px-3 py-2 leading-relaxed ${
+                              className={`px-3 py-2.5 leading-[1.7] ${
                                 ci === 0
                                   ? 'font-semibold text-stone-900 dark:text-zinc-100 whitespace-nowrap'
                                   : 'text-stone-600 dark:text-zinc-300'
                               }`}
                             >
-                              {cell}
+                              <RichText text={cell} />
                             </td>
                           ))}
                         </tr>
@@ -254,12 +259,14 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
               key={i}
               className="rounded-lg border border-stone-200 border-l-3 border-l-red-700 bg-white p-4 dark:border-zinc-800 dark:border-l-red-500 dark:bg-[#11151d]"
             >
-              <div className="flex items-center gap-2 text-xs font-semibold text-stone-900 dark:text-zinc-100">
+              <div className="flex items-center gap-2 text-[13.5px] font-semibold text-stone-900 dark:text-zinc-100">
                 <AlertTriangle className="h-3.5 w-3.5 text-red-700 dark:text-red-400 shrink-0" />
-                {p.title}
+                <span>
+                  <RichText text={p.title} />
+                </span>
               </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-stone-600 dark:text-zinc-300">
-                {p.detail}
+              <p className="mt-1.5 text-[13px] math-prose text-stone-600 dark:text-zinc-300">
+                <RichText text={p.detail} />
               </p>
             </div>
           ))}

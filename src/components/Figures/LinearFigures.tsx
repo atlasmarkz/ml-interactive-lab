@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { InlineMath } from '../RichText';
 import {
   academicRamp,
   Camera3D,
@@ -409,8 +410,8 @@ export const LinearFigures: React.FC<LinearFiguresProps> = ({ lectureCode, isDar
             </div>
           </div>
         </div>
-        <figcaption className="border-t border-stone-100 px-5 py-2.5 text-xs text-stone-500 dark:border-zinc-800 dark:text-zinc-400">
-          右图直击 WA1 Q4：在原 2D 平面 (lift=0) 无法用单条直线分开红/绿点；一旦引入交叉特征 x₃=x₁x₂ 把点 (1,1) 抬起至三维空间，蓝色线性超平面即可 0 误差切分！
+        <figcaption className="border-t border-stone-100 px-5 py-3 text-[13px] math-prose text-stone-600 dark:border-zinc-800 dark:text-zinc-400">
+          右图直击 WA1 Q4：在原 2D 平面（lift <InlineMath latex="= 0" />）无法用单条直线分开红/绿点；一旦引入交叉特征 <InlineMath latex="x_3 = x_1 x_2" /> 把点 <InlineMath latex="(1, 1)" /> 抬起至三维空间，蓝色线性超平面即可 <InlineMath latex="0" /> 误差切分！
         </figcaption>
       </figure>
     );

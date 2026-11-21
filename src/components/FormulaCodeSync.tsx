@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Code2, Layers, RotateCcw } from 'lucide-react';
 import { FormulaCodeSpec, SemanticRole } from '../types/curriculum';
 import { MathFormula } from './MathFormula';
+import { RichText } from './RichText';
 
 const ROLE_STYLES: Record<
   SemanticRole,
@@ -91,8 +92,12 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
     <div className="rounded-lg border border-stone-200 bg-white overflow-hidden dark:border-zinc-800 dark:bg-[#11151d]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 bg-stone-50/70 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
         <div>
-          <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">{spec.title}</h3>
-          <p className="mt-0.5 text-xs text-stone-500 dark:text-zinc-400">{spec.subtitle}</p>
+          <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
+            <RichText text={spec.title} />
+          </h3>
+          <p className="mt-0.5 text-[12.5px] leading-relaxed text-stone-500 dark:text-zinc-400">
+            <RichText text={spec.subtitle} />
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -173,7 +178,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
                     } ${isActive ? 'ring-1 ring-blue-600' : 'opacity-85 hover:opacity-100'}`}
                   >
                     <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-                    {term.label}
+                    <RichText text={term.label} />
                   </button>
                 );
               })}
@@ -185,15 +190,15 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
               className={`rounded-md border border-stone-200 border-l-3 bg-stone-50/80 p-3.5 dark:border-zinc-800 dark:bg-zinc-950/60 ${ROLE_STYLES[activeTerm.role].border}`}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-stone-900 dark:text-zinc-100">
-                  {activeTerm.label}
+                <span className="text-[13px] font-semibold text-stone-900 dark:text-zinc-100">
+                  <RichText text={activeTerm.label} />
                 </span>
                 <span className="inline-flex items-center gap-1 rounded bg-stone-200/70 px-1.5 py-0.5 font-mono text-[10.5px] text-stone-700 dark:bg-zinc-800 dark:text-zinc-300">
                   <Layers className="h-3 w-3" /> {activeTerm.shape}
                 </span>
               </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-stone-600 dark:text-zinc-300">
-                {activeTerm.explanation}
+              <p className="mt-1.5 text-[13px] math-prose text-stone-600 dark:text-zinc-300">
+                <RichText text={activeTerm.explanation} />
               </p>
             </div>
           )}

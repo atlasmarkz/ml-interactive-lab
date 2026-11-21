@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { InlineMath } from '../RichText';
 
 interface GenerativeRLVerifierProps {
   mode: 'l10-gen-models' | 'l11-rl-bellman-ppo';
@@ -123,13 +124,15 @@ export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode
                   </label>
                 ))}
               </div>
-              <div className="lg:col-span-7 rounded-md border border-stone-200 bg-stone-50/60 p-4 font-mono text-[11px] space-y-2 dark:border-zinc-800 dark:bg-zinc-950/60">
-                <div>理论最优判别器 D*(x) = p_data/(p_data+p_g) = <strong>{dOpt.toFixed(4)}</strong></div>
+              <div className="lg:col-span-7 rounded-md border border-stone-200 bg-stone-50/60 p-4 text-xs space-y-2.5 dark:border-zinc-800 dark:bg-zinc-950/60">
+                <div>
+                  理论最优判别器 <InlineMath latex={String.raw`D^*(x) = \frac{p_{\text{data}}}{p_{\text{data}} + p_g}`} /> = <strong className="font-mono">{dOpt.toFixed(4)}</strong>
+                </div>
                 <div className="border-t border-stone-200 pt-2 dark:border-zinc-800">
-                  L₂ = log(1 − D) = {satLoss.toFixed(4)} | 梯度幅值 |∂L₂/∂D| = <strong>{satGrad.toFixed(2)}</strong>（D→0 时梯度极弱！）
+                  <InlineMath latex={String.raw`L_2 = \log(1 - D)`} /> = <span className="font-mono">{satLoss.toFixed(4)}</span> | 梯度幅值 <InlineMath latex={String.raw`\left|\frac{\partial L_2}{\partial D}\right|`} /> = <strong className="font-mono">{satGrad.toFixed(2)}</strong>（<InlineMath latex="D \to 0" /> 时梯度极弱！）
                 </div>
                 <div className="text-emerald-700 dark:text-emerald-400">
-                  L₁ = −log D = {nonSatLoss.toFixed(4)} | 梯度幅值 |∂L₁/∂D| = <strong>{nonSatGrad.toFixed(2)}</strong>（非饱和强信号）
+                  <InlineMath latex={String.raw`L_1 = -\log D`} /> = <span className="font-mono">{nonSatLoss.toFixed(4)}</span> | 梯度幅值 <InlineMath latex={String.raw`\left|\frac{\partial L_1}{\partial D}\right|`} /> = <strong className="font-mono">{nonSatGrad.toFixed(2)}</strong>（非饱和强信号）
                 </div>
               </div>
             </div>
@@ -151,15 +154,23 @@ export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode
                   </label>
                 ))}
               </div>
-              <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 font-mono text-[11px] space-y-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+              <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 text-xs space-y-2.5 dark:border-zinc-800 dark:bg-zinc-950/60">
                 <div className="font-semibold text-stone-700 dark:text-zinc-300">DDPM 前向一步闭式采样</div>
-                <div>√ᾱ_t = {Math.sqrt(Math.max(0, alphaBar)).toFixed(4)}, √(1−ᾱ_t) = {Math.sqrt(Math.max(0, 1 - alphaBar)).toFixed(4)}</div>
-                <div>x_t = √ᾱ_t·x₁ + √(1−ᾱ_t)·ε = <strong>{ddpmXt.toFixed(4)}</strong></div>
+                <div>
+                  <InlineMath latex={String.raw`\sqrt{\bar{\alpha}_t} = ${Math.sqrt(Math.max(0, alphaBar)).toFixed(4)},\quad \sqrt{1-\bar{\alpha}_t} = ${Math.sqrt(Math.max(0, 1 - alphaBar)).toFixed(4)}`} />
+                </div>
+                <div>
+                  <InlineMath latex={String.raw`x_t = \sqrt{\bar{\alpha}_t}\,x_1 + \sqrt{1-\bar{\alpha}_t}\,\varepsilon`} /> = <strong className="font-mono">{ddpmXt.toFixed(4)}</strong>
+                </div>
                 <div className="border-t border-stone-200 pt-2 dark:border-zinc-800 font-semibold text-blue-700 dark:text-blue-400">
                   Flow Matching 线性插值路径
                 </div>
-                <div>x_t = (1−t)x₀ + t·x₁ = <strong>{flowXt.toFixed(4)}</strong></div>
-                <div>目标常速度场 u_t = x₁ − x₀ = <strong>{flowVel.toFixed(4)}</strong></div>
+                <div>
+                  <InlineMath latex={String.raw`x_t = (1-t)x_0 + t x_1`} /> = <strong className="font-mono">{flowXt.toFixed(4)}</strong>
+                </div>
+                <div>
+                  目标常速度场 <InlineMath latex={String.raw`u_t = x_1 - x_0`} /> = <strong className="font-mono">{flowVel.toFixed(4)}</strong>
+                </div>
               </div>
             </div>
           )}
@@ -253,12 +264,18 @@ export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode
               ))}
             </div>
 
-            <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 font-mono text-[11px] space-y-1.5 dark:border-zinc-800 dark:bg-zinc-950/60">
-              <div>重要性采样比 r_t = π_θ / π_old = <strong>{ratio.toFixed(4)}</strong> (安全区间 [{(1 - epsClip).toFixed(2)}, {(1 + epsClip).toFixed(2)}])</div>
-              <div>未裁剪项 r_t · Â_t = {unclipped.toFixed(4)} | 裁剪项 clip(r_t)·Â_t = {clipped.toFixed(4)}</div>
-              <div>最终目标 min(surr1, surr2) = <strong>{ppoObj.toFixed(4)}</strong></div>
+            <div className="lg:col-span-6 rounded-md border border-stone-200 bg-stone-50/60 p-4 text-xs space-y-2 dark:border-zinc-800 dark:bg-zinc-950/60">
+              <div>
+                重要性采样比 <InlineMath latex={String.raw`r_t = \frac{\pi_\theta}{\pi_{\text{old}}}`} /> = <strong className="font-mono">{ratio.toFixed(4)}</strong>（安全区间 <InlineMath latex={`[${(1 - epsClip).toFixed(2)},\\, ${(1 + epsClip).toFixed(2)}]`} />）
+              </div>
+              <div>
+                未裁剪项 <InlineMath latex={String.raw`r_t \hat{A}_t`} /> = <span className="font-mono">{unclipped.toFixed(4)}</span> | 裁剪项 <InlineMath latex={String.raw`\operatorname{clip}(r_t)\hat{A}_t`} /> = <span className="font-mono">{clipped.toFixed(4)}</span>
+              </div>
+              <div>
+                最终目标 <InlineMath latex={String.raw`\min(\text{surr}_1, \text{surr}_2)`} /> = <strong className="font-mono">{ppoObj.toFixed(4)}</strong>
+              </div>
               <div className={`pt-1.5 border-t border-stone-200 dark:border-zinc-800 font-semibold ${gradZero ? 'text-red-700 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
-                梯度状态：{gradZero ? '∇_θ L^CLIP = 0（已触发裁剪截断，停止过度更新）' : '∇_θ L^CLIP ≠ 0（正常策略梯度更新生效）'}
+                梯度状态：{gradZero ? <><InlineMath latex={String.raw`\nabla_\theta L^{\text{CLIP}} = 0`} />（已触发裁剪截断，停止过度更新）</> : <><InlineMath latex={String.raw`\nabla_\theta L^{\text{CLIP}} \neq 0`} />（正常策略梯度更新生效）</>}
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { DerivationSpec } from '../types/curriculum';
 import { MathFormula } from './MathFormula';
+import { RichText } from './RichText';
 
 interface DerivationChainProps {
   spec: DerivationSpec;
@@ -32,11 +33,11 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
           <div className="font-mono text-[11px] font-medium uppercase tracking-wider text-blue-700 dark:text-blue-400">
             Derivation · 零跳步数学推导链
           </div>
-          <h3 className="font-serif-display text-lg font-semibold text-stone-900 dark:text-zinc-100">
-            {spec.title}
+          <h3 className="font-serif-display text-lg font-semibold text-stone-900 dark:text-zinc-100 leading-snug">
+            <RichText text={spec.title} />
           </h3>
-          <p className="text-xs leading-relaxed text-stone-600 dark:text-zinc-400">
-            {spec.goal}
+          <p className="text-[13.5px] math-prose text-stone-600 dark:text-zinc-300">
+            <RichText text={spec.goal} />
           </p>
         </div>
 
@@ -96,17 +97,17 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-[11px] font-medium text-blue-700 dark:text-blue-400">
-                      [{step.rule}]
+                      [<RichText text={step.rule} />]
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto py-0.5">
+                  <div className="overflow-x-auto py-1">
                     <MathFormula latex={step.latex} className="text-sm sm:text-base" />
                   </div>
 
                   {isOpen && (
-                    <p className="border-l-2 border-stone-300 pl-3 text-xs leading-relaxed text-stone-600 dark:border-zinc-700 dark:text-zinc-400">
-                      {step.justification}
+                    <p className="border-l-2 border-stone-300 pl-3.5 text-[13px] math-prose text-stone-600 dark:border-zinc-700 dark:text-zinc-300">
+                      <RichText text={step.justification} />
                     </p>
                   )}
                 </div>
@@ -118,11 +119,11 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
 
       {/* Proof Conclusion */}
       {!isSelfTestMode && (
-        <div className="border-t border-stone-200 bg-stone-50/80 px-5 py-3 text-xs leading-relaxed text-stone-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300">
+        <div className="border-t border-stone-200 bg-stone-50/80 px-5 py-3.5 text-[13px] math-prose text-stone-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300">
           <span className="font-mono font-semibold text-stone-900 dark:text-zinc-100 mr-1.5">
             Q.E.D. / 物理含义:
           </span>
-          {spec.conclusion}
+          <RichText text={spec.conclusion} />
         </div>
       )}
     </article>

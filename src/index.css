@@ -115,6 +115,26 @@ input[type="number"]::-webkit-outer-spin-button {
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.35rem 0;
-  margin: 0.25rem 0;
+  padding: 0.4rem 0;
+  margin: 0.3rem 0;
+}
+
+/* Inline KaTeX harmonizing with CJK + Latin academic prose */
+.math-inline {
+  display: inline;
+  padding: 0 0.15em;
+  color: #1c1917;
+}
+
+.dark .math-inline {
+  color: #f4f4f5;
+}
+
+.math-inline .katex {
+  font-size: 1.06em;
+  line-height: 1.1;
+}
+
+.math-prose {
+  line-height: 1.85;
 }

@@ -4,6 +4,7 @@ import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { Play, RotateCcw, Terminal, Loader2, CheckCircle2, AlertCircle, BarChart3 } from 'lucide-react';
 import { PlotSeriesData, SandboxSpec } from '../types/curriculum';
+import { RichText } from './RichText';
 
 // Singleton worker shared across all pages so Pyodide only downloads once per session
 let sharedWorker: Worker | null = null;
@@ -210,13 +211,15 @@ export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) =>
           <div className="flex items-center gap-2">
             <Terminal className="h-4 w-4 text-stone-700 dark:text-zinc-300" />
             <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
-              {spec.title}
+              <RichText text={spec.title} />
             </h3>
             <span className="rounded border border-stone-300 bg-white px-1.5 py-0.5 font-mono text-[10px] text-stone-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
               Pyodide · NumPy
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-stone-500 dark:text-zinc-400">{spec.description}</p>
+          <p className="mt-0.5 text-[12.5px] leading-relaxed text-stone-500 dark:text-zinc-400">
+            <RichText text={spec.description} />
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
