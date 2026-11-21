@@ -22,6 +22,9 @@ export default defineConfig({
           if (id.includes('node_modules/@codemirror') || id.includes('node_modules/@uiw')) {
             return 'codemirror-vendor';
           }
+          if (id.includes('/components/Figures/')) {
+            return 'figures';
+          }
           if (id.includes('/components/Verifiers/')) {
             return 'verifiers';
           }

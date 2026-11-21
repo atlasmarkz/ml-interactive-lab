@@ -7,6 +7,9 @@ import { DerivationChain } from '../components/DerivationChain';
 import { FormulaCodeSync } from '../components/FormulaCodeSync';
 import { PythonSandbox } from '../components/PythonSandbox';
 import { MathFormula } from '../components/MathFormula';
+import { LinearFigures } from '../components/Figures/LinearFigures';
+import { DeepOptFigures } from '../components/Figures/DeepOptFigures';
+import { TransformerGenRLFigures } from '../components/Figures/TransformerGenRLFigures';
 import { LinearLogisticVerifier } from '../components/Verifiers/LinearLogisticVerifier';
 import { SurrogateNBVerifier } from '../components/Verifiers/SurrogateNBVerifier';
 import { BackpropNormVerifier } from '../components/Verifiers/BackpropNormVerifier';
@@ -17,6 +20,19 @@ import { GenerativeRLVerifier } from '../components/Verifiers/GenerativeRLVerifi
 interface ModulePageProps {
   isDark: boolean;
 }
+
+const renderFigure = (code: string, isDark: boolean) => {
+  if (code === 'L01' || code === 'L02.1' || code === 'L02.2' || code === 'L03') {
+    return <LinearFigures lectureCode={code} isDark={isDark} />;
+  }
+  if (code === 'L04' || code === 'L05' || code === 'L06' || code === 'L07') {
+    return <DeepOptFigures lectureCode={code} isDark={isDark} />;
+  }
+  if (code === 'L08' || code === 'L09' || code === 'L10' || code === 'L11') {
+    return <TransformerGenRLFigures lectureCode={code} isDark={isDark} />;
+  }
+  return null;
+};
 
 const renderVerifier = (id: VerifierId) => {
   switch (id) {
@@ -89,7 +105,9 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-stone-700 dark:text-zinc-300">
             {lec.readingChecklist.map((item, i) => (
               <li key={i} className="flex items-start gap-2 leading-relaxed">
-                <span className="font-mono text-[10px] text-stone-400 mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-[10px] text-stone-400 mt-0.5">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
                 <span>{item}</span>
               </li>
             ))}
@@ -100,11 +118,12 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         <nav className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
           {[
             { href: '#derivations', label: '§1 零跳步推导链' },
-            { href: '#verifier', label: '§2 数值矩阵验算器' },
-            { href: '#concepts', label: '§3 核心概念与对照' },
-            { href: '#code-sync', label: '§4 公式↔代码实现' },
-            { href: '#pitfalls', label: '§5 易错与作业警示' },
-            ...(lec.sandbox ? [{ href: '#sandbox', label: '§6 Python 验证' }] : []),
+            { href: '#figures', label: '§2 几何与高维图解' },
+            { href: '#verifier', label: '§3 数值矩阵验算器' },
+            { href: '#concepts', label: '§4 核心概念与对照' },
+            { href: '#code-sync', label: '§5 公式↔代码实现' },
+            { href: '#pitfalls', label: '§6 易错与作业警示' },
+            ...(lec.sandbox ? [{ href: '#sandbox', label: '§7 Python 实测' }] : []),
           ].map((link) => (
             <a
               key={link.href}
@@ -129,18 +148,26 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* §2 Editable Numerical Matrix & Gradient Verifier */}
+      {/* §2 Publication-Grade Geometric & High-Dimensional Figures */}
+      <section id="figures" className="scroll-mt-20 space-y-4">
+        <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
+          §2 几何直觉与高维交互图解 (Scientific Figures)
+        </h2>
+        {renderFigure(lec.code, isDark)}
+      </section>
+
+      {/* §3 Editable Numerical Matrix & Gradient Verifier */}
       <section id="verifier" className="scroll-mt-20 space-y-4">
         <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
-          §2 可编辑数值与矩阵验算器 (Numerical Verifier)
+          §3 可编辑数值与矩阵验算器 (Numerical Verifier)
         </h2>
         {renderVerifier(lec.verifierId)}
       </section>
 
-      {/* §3 Key Concept Notes & Comparison Tables */}
+      {/* §4 Key Concept Notes & Comparison Tables */}
       <section id="concepts" className="scroll-mt-20 space-y-5">
         <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
-          §3 核心概念精讲与横向对比 (Concepts & Comparisons)
+          §4 核心概念精讲与横向对比 (Concepts & Comparisons)
         </h2>
         <div className="space-y-5">
           {lec.concepts.map((c, idx) => (
@@ -204,10 +231,10 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* §4 Formula <-> Implementation Sync */}
+      {/* §5 Formula <-> Implementation Sync */}
       <section id="code-sync" className="scroll-mt-20 space-y-5">
         <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
-          §4 公式与代码精确映射 (Formula → Code)
+          §5 公式与代码精确映射 (Formula → Code)
         </h2>
         <div className="space-y-6">
           {lec.formulaSpecs.map((spec) => (
@@ -216,10 +243,10 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* §5 Pitfalls & WA/HA Checkpoints */}
+      {/* §6 Pitfalls & WA/HA Checkpoints */}
       <section id="pitfalls" className="scroll-mt-20 space-y-4">
         <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
-          §5 易错点与作业/考场警示 (Common Pitfalls)
+          §6 易错点与作业/考场警示 (Common Pitfalls)
         </h2>
         <div className="space-y-3">
           {lec.pitfalls.map((p, i) => (
@@ -239,11 +266,11 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* §6 Optional Executable Python/NumPy Verification */}
+      {/* §7 Optional Executable Python/NumPy Verification */}
       {lec.sandbox && (
         <section id="sandbox" className="scroll-mt-20 space-y-4">
           <h2 className="font-serif-display text-xl font-semibold text-stone-950 dark:text-zinc-100 border-b border-stone-200 pb-2 dark:border-zinc-800">
-            §6 浏览器内 NumPy 实测验证 (Executable Verification)
+            §7 浏览器内 NumPy 实测验证 (Executable Verification)
           </h2>
           <PythonSandbox spec={lec.sandbox} isDark={isDark} />
         </section>
