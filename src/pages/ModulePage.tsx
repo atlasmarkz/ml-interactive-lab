@@ -3,10 +3,16 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  BookMarked,
+  Calculator,
   CheckCircle2,
   ChevronDown,
+  Code2,
   HelpCircle,
   Lightbulb,
+  Rotate3D,
+  Sliders,
+  Terminal,
 } from 'lucide-react';
 import { CURRICULUM, getPartBySlug } from '../data/curriculum';
 import { LECTURE_NOTES } from '../data/lectureNotes';
@@ -15,6 +21,11 @@ import { FormulaCodeSync } from '../components/FormulaCodeSync';
 import { PythonSandbox } from '../components/PythonSandbox';
 import { LectureDeepDive } from '../components/LectureDeepDive';
 import { WorkedExamples } from '../components/WorkedExamples';
+import { Studio0InfoFormula } from '../components/Labs3D/Studio0InfoFormula';
+import { Studio3DLossSurface } from '../components/Labs3D/Studio3DLossSurface';
+import { Studio3DTransformerCLIP } from '../components/Labs3D/Studio3DTransformerCLIP';
+import { Studio3DGenerativeManifold } from '../components/Labs3D/Studio3DGenerativeManifold';
+import { Studio3DRLValueMountain } from '../components/Labs3D/Studio3DRLValueMountain';
 import { Part0InfoTheoryLab } from '../components/Labs/Part0InfoTheoryLab';
 import { Part1RegressionLab } from '../components/Labs/Part1RegressionLab';
 import { Part1SoftmaxGDALab } from '../components/Labs/Part1SoftmaxGDALab';
@@ -35,6 +46,25 @@ import { Part5CliffRLDeepLab } from '../components/Labs/Part5CliffRLDeepLab';
 interface ModulePageProps {
   isDark: boolean;
 }
+
+const render3DStudioForPart = (partNumber: number) => {
+  switch (partNumber) {
+    case 0:
+      return <Studio0InfoFormula />;
+    case 1:
+      return <Studio3DLossSurface mode="regularization" />;
+    case 2:
+      return <Studio3DLossSurface mode="optimization" />;
+    case 3:
+      return <Studio3DTransformerCLIP />;
+    case 4:
+      return <Studio3DGenerativeManifold />;
+    case 5:
+      return <Studio3DRLValueMountain />;
+    default:
+      return null;
+  }
+};
 
 const renderLabsForPart = (partNumber: number) => {
   switch (partNumber) {
@@ -85,6 +115,15 @@ const renderLabsForPart = (partNumber: number) => {
   }
 };
 
+const JUMP_ITEMS = [
+  { id: 'sec-3d', label: '3D 公式演播室', icon: Rotate3D },
+  { id: 'sec-labs', label: '交互实验台', icon: Sliders },
+  { id: 'sec-notes', label: '讲义精讲', icon: BookMarked },
+  { id: 'sec-sync', label: '公式↔代码', icon: Code2 },
+  { id: 'sec-worked', label: '手算演练', icon: Calculator },
+  { id: 'sec-sandbox', label: 'Python 沙盒', icon: Terminal },
+];
+
 export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
   const { slug } = useParams<{ slug: string }>();
   const part = slug ? getPartBySlug(slug) : undefined;
@@ -106,30 +145,32 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
   const workedExamples = WORKED_EXAMPLES[part.partNumber] ?? [];
 
   return (
-    <div className="space-y-10 pb-12">
+    <div className="space-y-10 pb-14">
       {/* Module Hero Header */}
-      <section className="space-y-4">
+      <section className="rounded-3xl border border-slate-200/90 bg-white/95 p-6 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-[#0b101d]/95 space-y-5">
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 font-mono font-bold text-white dark:bg-blue-600">
+          <span className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-2.5 py-1 font-mono font-bold text-white shadow-xs">
             PART {part.partNumber}
           </span>
           <span className="font-medium text-slate-500 dark:text-slate-400">{part.titleEn}</span>
         </div>
 
-        <h1 className="font-serif-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          {part.titleZh}
-        </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
-          {part.tagline}
-        </p>
+        <div>
+          <h1 className="font-serif-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">
+            {part.titleZh}
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
+            {part.tagline}
+          </p>
+        </div>
 
-        {/* Key Takeaways Card */}
-        <div className="rounded-2xl border border-blue-200/80 bg-blue-50/40 p-5 dark:border-blue-900/50 dark:bg-blue-950/20">
-          <div className="mb-2.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+        {/* Key Takeaways */}
+        <div className="rounded-2xl border border-blue-200/70 bg-blue-50/45 p-4.5 dark:border-blue-900/50 dark:bg-blue-950/20">
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
             <Lightbulb className="h-4 w-4" />
             本节核心直觉 (Key Takeaways)
           </div>
-          <ul className="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+          <ul className="space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
             {part.keyTakeaways.map((tip, i) => (
               <li key={i} className="flex items-start gap-2 leading-relaxed">
                 <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
@@ -140,14 +181,51 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* Section 1: Interactive Visual Labs */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 font-mono text-xs font-bold text-white">
+      {/* Sticky Glassmorphic Section Jump Bar */}
+      <div className="sticky top-[57px] z-20 -mx-1 px-1 py-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar rounded-2xl border border-slate-200/90 bg-white/85 p-1.5 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-[#0b101d]/85">
+          {JUMP_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-900 hover:text-white transition dark:text-slate-300 dark:hover:bg-blue-600 dark:hover:text-white"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {item.label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Section 0: Flagship 3D Formula-Driven Studio */}
+      <section id="sec-3d" className="scroll-mt-32 space-y-4">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-xs">
+            <Rotate3D className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              公式驱动 · 3D 高维可视化演播室
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              点击公式中的彩色符号或消融开关，在可 360° 旋转的高维几何空间里亲眼见证每个数学项的核心作用
+            </p>
+          </div>
+        </div>
+        {render3DStudioForPart(part.partNumber)}
+      </section>
+
+      {/* Section 1: 2D Interactive Visual Labs */}
+      <section id="sec-labs" className="scroll-mt-32 space-y-4">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-blue-600 font-mono text-xs font-bold text-white">
             1
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            动态可视化实验室 · 拖动参数建立几何直觉
+            专题交互实验台 · 精细解剖算法细节
           </h2>
         </div>
         {renderLabsForPart(part.partNumber)}
@@ -155,9 +233,9 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
 
       {/* Section 2: Lecture-Depth Structured Deep Dive */}
       {lectureSections.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 font-mono text-xs font-bold text-white">
+        <section id="sec-notes" className="scroll-mt-32 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-600 font-mono text-xs font-bold text-white">
               2
             </span>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -169,9 +247,9 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
       )}
 
       {/* Section 3: Bidirectional Formula <-> Code Sync */}
-      <section className="space-y-5">
-        <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 font-mono text-xs font-bold text-white">
+      <section id="sec-sync" className="scroll-mt-32 space-y-5">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-violet-600 font-mono text-xs font-bold text-white">
             3
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -187,9 +265,9 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
 
       {/* Section 4: Interactive Worked Examples */}
       {workedExamples.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 font-mono text-xs font-bold text-white">
+        <section id="sec-worked" className="scroll-mt-32 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-rose-600 font-mono text-xs font-bold text-white">
               4
             </span>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -201,9 +279,9 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
       )}
 
       {/* Section 5: In-Browser Python/NumPy Sandbox */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 font-mono text-xs font-bold text-white">
+      <section id="sec-sandbox" className="scroll-mt-32 space-y-4">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-600 font-mono text-xs font-bold text-white">
             5
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -215,8 +293,8 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
 
       {/* Section 6: Thought Questions Accordion */}
       <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 font-mono text-xs font-bold text-white">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500 font-mono text-xs font-bold text-white">
             6
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -229,7 +307,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
             return (
               <div
                 key={i}
-                className="rounded-2xl border border-slate-200 bg-white overflow-hidden dark:border-slate-800 dark:bg-slate-900"
+                className="rounded-2xl border border-slate-200 bg-white overflow-hidden dark:border-slate-800 dark:bg-[#0b101d]"
               >
                 <button
                   onClick={() => setOpenQ(isOpen ? null : i)}
@@ -246,7 +324,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
                   />
                 </button>
                 {isOpen && (
-                  <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-4 text-xs sm:text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-300">
+                  <div className="border-t border-slate-100 bg-slate-50/70 px-5 py-4 text-xs sm:text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
                     {q.answer}
                   </div>
                 )}
@@ -257,7 +335,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
       </section>
 
       {/* Prev / Next Footer Navigation */}
-      <nav className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-slate-800">
+      <nav className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-200/80 pt-6 dark:border-slate-800">
         {prevPart ? (
           <Link
             to={`/part/${prevPart.slug}`}
@@ -273,7 +351,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         {nextPart ? (
           <Link
             to={`/part/${nextPart.slug}`}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:from-blue-500 hover:to-indigo-500"
           >
             下一章 · Part {nextPart.partNumber}: {nextPart.titleZh}
             <ArrowRight className="h-4 w-4" />

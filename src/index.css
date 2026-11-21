@@ -24,93 +24,103 @@
   font-family: var(--font-serif);
 }
 
+/* Subtle scientific observatory dot-grid canvas */
+.bg-scientific-grid {
+  background-image: radial-gradient(rgba(100, 116, 139, 0.16) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.dark .bg-scientific-grid {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 /* Interactive KaTeX Formula Tokens */
 .formula-token {
   display: inline-block;
-  padding: 2px 5px;
-  margin: -2px 1px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  margin: -2px 1.5px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: all 0.16s ease;
+  transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
   border: 1.5px solid transparent;
 }
 
 .formula-token-data {
   color: #1d4ed8;
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: rgba(59, 130, 246, 0.11);
 }
 .dark .formula-token-data {
   color: #60a5fa;
-  background-color: rgba(59, 130, 246, 0.16);
+  background-color: rgba(59, 130, 246, 0.17);
 }
 .formula-token-data:hover,
 .formula-token-data.is-active {
   background-color: rgba(59, 130, 246, 0.24);
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .formula-token-param {
   color: #6d28d9;
-  background-color: rgba(139, 92, 246, 0.1);
+  background-color: rgba(139, 92, 246, 0.11);
 }
 .dark .formula-token-param {
   color: #a78bfa;
-  background-color: rgba(139, 92, 246, 0.16);
+  background-color: rgba(139, 92, 246, 0.17);
 }
 .formula-token-param:hover,
 .formula-token-param.is-active {
   background-color: rgba(139, 92, 246, 0.24);
   border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .formula-token-output {
   color: #047857;
-  background-color: rgba(16, 185, 129, 0.1);
+  background-color: rgba(16, 185, 129, 0.11);
 }
 .dark .formula-token-output {
   color: #34d399;
-  background-color: rgba(16, 185, 129, 0.16);
+  background-color: rgba(16, 185, 129, 0.17);
 }
 .formula-token-output:hover,
 .formula-token-output.is-active {
   background-color: rgba(16, 185, 129, 0.24);
   border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 .formula-token-loss {
   color: #be123c;
-  background-color: rgba(244, 63, 94, 0.1);
+  background-color: rgba(244, 63, 94, 0.11);
 }
 .dark .formula-token-loss {
   color: #fb7185;
-  background-color: rgba(244, 63, 94, 0.16);
+  background-color: rgba(244, 63, 94, 0.17);
 }
 .formula-token-loss:hover,
 .formula-token-loss.is-active {
   background-color: rgba(244, 63, 94, 0.24);
   border-color: #f43f5e;
-  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
 }
 
 .formula-token-hyper {
   color: #b45309;
-  background-color: rgba(245, 158, 11, 0.12);
+  background-color: rgba(245, 158, 11, 0.13);
 }
 .dark .formula-token-hyper {
   color: #fbbf24;
-  background-color: rgba(245, 158, 11, 0.16);
+  background-color: rgba(245, 158, 11, 0.18);
 }
 .formula-token-hyper:hover,
 .formula-token-hyper.is-active {
   background-color: rgba(245, 158, 11, 0.26);
   border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
-/* Range Slider Polish */
+/* Custom Range Slider */
 input[type="range"] {
   accent-color: #3b82f6;
 }
@@ -118,9 +128,16 @@ input[type="range"] {
   accent-color: #60a5fa;
 }
 
-/* KaTeX overflow scroll for mobile */
+/* Scrollbar & KaTeX polish */
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.5rem 0;
+  padding: 0.45rem 0;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

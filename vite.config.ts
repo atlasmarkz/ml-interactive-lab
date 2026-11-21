@@ -12,16 +12,26 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'katex-vendor': ['katex'],
-          'codemirror-vendor': [
-            '@uiw/react-codemirror',
-            '@codemirror/lang-python',
-            '@codemirror/theme-one-dark',
-            '@codemirror/view',
-            '@codemirror/state',
-          ],
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+            return 'react-vendor';
+          }
+          if (id.includes('node_modules/katex')) {
+            return 'katex-vendor';
+          }
+          if (id.includes('node_modules/@codemirror') || id.includes('node_modules/@uiw')) {
+            return 'codemirror-vendor';
+          }
+          if (id.includes('/components/Labs3D/')) {
+            return 'studios-3d';
+          }
+          if (id.includes('/components/Labs/')) {
+            return 'labs-2d';
+          }
+          if (id.includes('/data/')) {
+            return 'curriculum-data';
+          }
+          return undefined;
         },
       },
     },
