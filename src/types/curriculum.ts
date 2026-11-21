@@ -14,10 +14,6 @@ export interface FormulaCodeSpec {
   id: string;
   title: string;
   subtitle: string;
-  /**
-   * KaTeX string. Interactive terms use:
-   * \htmlClass{formula-token formula-token-ROLE token-ID}{...}
-   */
   latex: string;
   numpyCode: string;
   pytorchCode?: string;
@@ -37,8 +33,43 @@ export interface ThoughtQuestion {
   answer: string;
 }
 
+export interface DeepDiveConcept {
+  heading: string;
+  badge?: string;
+  summary: string;
+  latex?: string;
+  bullets: string[];
+  table?: {
+    headers: string[];
+    rows: string[][];
+  };
+}
+
+export interface LectureSection {
+  id: string;
+  lectureTag: string; // e.g. "L01 · 回归与正则化"
+  title: string;
+  concepts: DeepDiveConcept[];
+}
+
+export interface WorkedExampleStep {
+  title: string;
+  explanation: string;
+  latex?: string;
+}
+
+export interface WorkedExample {
+  id: string;
+  tag: string; // e.g. "高频手算题型"
+  title: string;
+  problem: string;
+  problemLatex?: string;
+  steps: WorkedExampleStep[];
+  keyTakeaway: string;
+}
+
 export interface PartModule {
-  id: string; // e.g. 'part-0'
+  id: string;
   partNumber: number;
   slug: string;
   titleZh: string;

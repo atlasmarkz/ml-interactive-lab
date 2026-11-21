@@ -9,18 +9,28 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import { CURRICULUM, getPartBySlug } from '../data/curriculum';
+import { LECTURE_NOTES } from '../data/lectureNotes';
+import { WORKED_EXAMPLES } from '../data/workedExamples';
 import { FormulaCodeSync } from '../components/FormulaCodeSync';
 import { PythonSandbox } from '../components/PythonSandbox';
+import { LectureDeepDive } from '../components/LectureDeepDive';
+import { WorkedExamples } from '../components/WorkedExamples';
 import { Part0InfoTheoryLab } from '../components/Labs/Part0InfoTheoryLab';
 import { Part1RegressionLab } from '../components/Labs/Part1RegressionLab';
 import { Part1SoftmaxGDALab } from '../components/Labs/Part1SoftmaxGDALab';
+import { Part1DeepDiveLab } from '../components/Labs/Part1DeepDiveLab';
 import { Part2BackpropOptLab } from '../components/Labs/Part2BackpropOptLab';
 import { Part2ConvRNNLab } from '../components/Labs/Part2ConvRNNLab';
+import { Part2NormActivationLab } from '../components/Labs/Part2NormActivationLab';
+import { Part2CNNCalcLSTMLab } from '../components/Labs/Part2CNNCalcLSTMLab';
 import { Part3TransformerLab } from '../components/Labs/Part3TransformerLab';
 import { Part3ViTCLIPLab } from '../components/Labs/Part3ViTCLIPLab';
+import { Part3LLMDeepLab } from '../components/Labs/Part3LLMDeepLab';
 import { Part4VAEGANLab } from '../components/Labs/Part4VAEGANLab';
 import { Part4DiffusionFlowLab } from '../components/Labs/Part4DiffusionFlowLab';
+import { Part4GenLossLab } from '../components/Labs/Part4GenLossLab';
 import { Part5RLGridLab } from '../components/Labs/Part5RLGridLab';
+import { Part5CliffRLDeepLab } from '../components/Labs/Part5CliffRLDeepLab';
 
 interface ModulePageProps {
   isDark: boolean;
@@ -35,19 +45,23 @@ const renderLabsForPart = (partNumber: number) => {
         <div className="space-y-6">
           <Part1RegressionLab />
           <Part1SoftmaxGDALab />
+          <Part1DeepDiveLab />
         </div>
       );
     case 2:
       return (
         <div className="space-y-6">
           <Part2BackpropOptLab />
+          <Part2NormActivationLab />
           <Part2ConvRNNLab />
+          <Part2CNNCalcLSTMLab />
         </div>
       );
     case 3:
       return (
         <div className="space-y-6">
           <Part3TransformerLab />
+          <Part3LLMDeepLab />
           <Part3ViTCLIPLab />
         </div>
       );
@@ -56,10 +70,16 @@ const renderLabsForPart = (partNumber: number) => {
         <div className="space-y-6">
           <Part4VAEGANLab />
           <Part4DiffusionFlowLab />
+          <Part4GenLossLab />
         </div>
       );
     case 5:
-      return <Part5RLGridLab />;
+      return (
+        <div className="space-y-6">
+          <Part5RLGridLab />
+          <Part5CliffRLDeepLab />
+        </div>
+      );
     default:
       return null;
   }
@@ -82,6 +102,8 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
   const idx = CURRICULUM.findIndex((p) => p.id === part.id);
   const prevPart = idx > 0 ? CURRICULUM[idx - 1] : null;
   const nextPart = idx < CURRICULUM.length - 1 ? CURRICULUM[idx + 1] : null;
+  const lectureSections = LECTURE_NOTES[part.partNumber] ?? [];
+  const workedExamples = WORKED_EXAMPLES[part.partNumber] ?? [];
 
   return (
     <div className="space-y-10 pb-12">
@@ -131,11 +153,26 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         {renderLabsForPart(part.partNumber)}
       </section>
 
-      {/* Section 2: Bidirectional Formula <-> Code Sync */}
+      {/* Section 2: Lecture-Depth Structured Deep Dive */}
+      {lectureSections.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 font-mono text-xs font-bold text-white">
+              2
+            </span>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              讲义级知识点全解 · 对齐每讲 PPT 细节与横向对比
+            </h2>
+          </div>
+          <LectureDeepDive sections={lectureSections} />
+        </section>
+      )}
+
+      {/* Section 3: Bidirectional Formula <-> Code Sync */}
       <section className="space-y-5">
         <div className="flex items-center gap-2">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 font-mono text-xs font-bold text-white">
-            2
+            3
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             公式 ↔ 代码双向联动 · 张量维度与实现对照
@@ -148,11 +185,26 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         </div>
       </section>
 
-      {/* Section 3: In-Browser Python/NumPy Sandbox */}
+      {/* Section 4: Interactive Worked Examples */}
+      {workedExamples.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 font-mono text-xs font-bold text-white">
+              4
+            </span>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              分步手算演练 · 对标书面作业与期末高频推导题型
+            </h2>
+          </div>
+          <WorkedExamples examples={workedExamples} />
+        </section>
+      )}
+
+      {/* Section 5: In-Browser Python/NumPy Sandbox */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 font-mono text-xs font-bold text-white">
-            3
+            5
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             浏览器内在线运行 · 改写超参数实测原理
@@ -161,11 +213,11 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
         <PythonSandbox spec={part.sandbox} isDark={isDark} />
       </section>
 
-      {/* Section 4: Thought Questions Accordion */}
+      {/* Section 6: Thought Questions Accordion */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 font-mono text-xs font-bold text-white">
-            4
+            6
           </span>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             思考题自测 · 检验真正理解

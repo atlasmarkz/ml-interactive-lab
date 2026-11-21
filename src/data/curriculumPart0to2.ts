@@ -571,6 +571,83 @@ optimizer.step()`,
           },
         ],
       },
+      {
+        id: 'p2-bn-ln',
+        title: 'BatchNorm vs LayerNorm 归一化公式与维度对照',
+        subtitle: '只差一个 axis 维度参数，却决定了 CV 与 NLP 架构的分野',
+        latex: String.raw`\htmlClass{formula-token formula-token-output token-xhat}{\hat{\mathbf{x}}} = \frac{\htmlClass{formula-token formula-token-data token-xin}{\mathbf{x}} - \htmlClass{formula-token formula-token-hyper token-mu}{\boldsymbol{\mu}}}{\sqrt{\htmlClass{formula-token formula-token-hyper token-var}{\boldsymbol{\sigma}^2} + \epsilon}}, \qquad \htmlClass{formula-token formula-token-output token-yout}{\mathbf{y}} = \htmlClass{formula-token formula-token-param token-gb}{\boldsymbol{\gamma} \odot \hat{\mathbf{x}} + \boldsymbol{\beta}}`,
+        numpyCode: `def norm_forward(x, gamma, beta, mode="batch", eps=1e-5):
+    # x shape: (N, C) —— BatchNorm 沿样本轴 axis=0，LayerNorm 沿特征轴 axis=1
+    axis = 0 if mode == "batch" else 1
+    mu = np.mean(x, axis=axis, keepdims=True)
+    var = np.var(x, axis=axis, keepdims=True)
+    x_hat = (x - mu) / np.sqrt(var + eps)
+    y = gamma * x_hat + beta
+    return y`,
+        pytorchCode: `import torch.nn as nn
+
+# CV (CNN): 跨 Batch 统计均值方差，推理时切换 running_mean / running_var
+bn = nn.BatchNorm1d(num_features=C)
+
+# NLP (Transformer): 每个 Token 独立跨特征维归一化，不依赖 Batch Size
+ln = nn.LayerNorm(normalized_shape=C)`,
+        terms: [
+          {
+            id: 'xin',
+            label: '输入激活张量 x',
+            role: 'data',
+            shape: '(N, C)',
+            explanation: 'N 为 Batch 大小，C 为隐藏特征维度/通道数。',
+            numpyLines: [2, 3],
+            pytorchLines: [4, 7],
+          },
+          {
+            id: 'mu',
+            label: '切片均值 μ',
+            role: 'hyper',
+            shape: 'BN:(1,C) / LN:(N,1)',
+            explanation: '仅 axis=0 (BN) 与 axis=1 (LN) 一字之差：BN 跨样本算均值，LN 跨特征算均值！',
+            numpyLines: [3, 4],
+            pytorchLines: [4, 7],
+          },
+          {
+            id: 'var',
+            label: '切片方差 σ²',
+            role: 'hyper',
+            shape: 'BN:(1,C) / LN:(N,1)',
+            explanation: '分母加 ε 防止除零；BN 在测试 eval() 时必须冻结并使用训练期累积的 running_var。',
+            numpyLines: [5, 6],
+            pytorchLines: [4, 7],
+          },
+          {
+            id: 'xhat',
+            label: '标准化激活 x̂',
+            role: 'output',
+            shape: '(N, C)',
+            explanation: '把激活拉回均值为 0、方差为 1 的稳定区间，防止落入激活函数饱和区。',
+            numpyLines: [6],
+            pytorchLines: [4, 7],
+          },
+          {
+            id: 'gb',
+            label: '可学习缩放 γ 与平移 β',
+            role: 'param',
+            shape: '(C,)',
+            explanation: '如果网络发现某层不需要零均值分布，可以学出 γ=σ, β=μ 完美还原原始表达能力！',
+            numpyLines: [7],
+            pytorchLines: [4, 7],
+          },
+          {
+            id: 'yout',
+            label: '归一化最终输出 y',
+            role: 'output',
+            shape: '(N, C)',
+            explanation: '直接送入下一层或残差相加（Pre-Norm Transformer 放在 Attention/FFN 之前）。',
+            numpyLines: [7, 8],
+            pytorchLines: [4, 7],
+          },
+        ],
+      },
     ],
     sandbox: {
       id: 'sandbox-p2',

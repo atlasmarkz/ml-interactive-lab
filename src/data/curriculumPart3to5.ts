@@ -436,6 +436,86 @@ def ddpm_loss_torch(model, x0, alpha_bars, T=1000):
           },
         ],
       },
+      {
+        id: 'p4-flow-matching',
+        title: 'Flow Matching 条件直线速度场回归（WA4 Q4 核心）',
+        subtitle: '用一条直线连接噪声 x₀ 与图像 x₁，把生成建模化简为最纯粹的常速度回归',
+        latex: String.raw`\htmlClass{formula-token formula-token-output token-fmxt}{\mathbf{x}_t} = (1 - \htmlClass{formula-token formula-token-hyper token-fmt}{t})\htmlClass{formula-token formula-token-data token-fmx0}{\mathbf{x}_0} + t\htmlClass{formula-token formula-token-data token-fmx1}{\mathbf{x}_1}, \qquad \htmlClass{formula-token formula-token-loss token-fmloss}{\mathcal{L}_{\text{FM}}} = \mathbb{E}\!\Big[\big\|\htmlClass{formula-token formula-token-param token-fmv}{\mathbf{v}_\theta(\mathbf{x}_t, t)} - (\mathbf{x}_1 - \mathbf{x}_0)\big\|^2\Big]`,
+        numpyCode: `def flow_matching_loss(x1, vel_model):
+    B = x1.shape[0]
+    t = np.random.uniform(0.0, 1.0, size=(B, 1))   # t ~ U(0, 1)
+    x0 = np.random.randn(*x1.shape)                # x0 ~ N(0, I) 纯噪声
+    x_t = (1.0 - t) * x0 + t * x1                  # 线性插值中间状态
+    target_v = x1 - x0                             # 直线真实速度 dx_t/dt
+    pred_v = vel_model(x_t, t)                     # 神经网络预测速度场
+    return np.mean((pred_v - target_v) ** 2)`,
+        pytorchCode: `import torch
+import torch.nn.functional as F
+
+def flow_matching_loss_torch(model, x1):
+    t = torch.rand(x1.size(0), 1, 1, 1, device=x1.device)
+    x0 = torch.randn_like(x1)
+    x_t = (1.0 - t) * x0 + t * x1
+    target_v = x1 - x0
+    pred_v = model(x_t, t.squeeze())
+    return F.mse_loss(pred_v, target_v)`,
+        terms: [
+          {
+            id: 'fmt',
+            label: '连续时间 t ~ U(0, 1)',
+            role: 'hyper',
+            shape: '(B, 1)',
+            explanation: '在 [0, 1] 连续区间均匀采样，t=0 对应纯高斯噪声，t=1 对应清晰目标数据。',
+            numpyLines: [3],
+            pytorchLines: [5],
+          },
+          {
+            id: 'fmx0',
+            label: '噪声起点 x₀ ~ p₀',
+            role: 'data',
+            shape: '(B, C, H, W)',
+            explanation: '从简单先验分布 N(0, I) 采样的初始粒子。',
+            numpyLines: [4],
+            pytorchLines: [6],
+          },
+          {
+            id: 'fmx1',
+            label: '目标数据 x₁ ~ p₁',
+            role: 'data',
+            shape: '(B, C, H, W)',
+            explanation: '训练集中的真实图像样本。',
+            numpyLines: [5, 6],
+            pytorchLines: [7, 8],
+          },
+          {
+            id: 'fmxt',
+            label: '线性插值态 x_t',
+            role: 'output',
+            shape: '(B, C, H, W)',
+            explanation: 'x₀ 与 x₁ 之间最直的欧氏路径，比 DDPM 弯曲调度更易数值积分。',
+            numpyLines: [5],
+            pytorchLines: [7],
+          },
+          {
+            id: 'fmv',
+            label: '速度场网络 v_θ(x_t, t)',
+            role: 'param',
+            shape: '(B, C, H, W)',
+            explanation: '输入当前位置与时间，预测该点流向数据分布的瞬时速度向量。',
+            numpyLines: [7],
+            pytorchLines: [9],
+          },
+          {
+            id: 'fmloss',
+            label: '条件速度回归损失',
+            role: 'loss',
+            shape: 'scalar',
+            explanation: '直接用 MSE 拟合直线导数 (x₁ − x₀)，推理时沿 ODE 做少量 Euler 步即可生成高清图像。',
+            numpyLines: [6, 8],
+            pytorchLines: [8, 10],
+          },
+        ],
+      },
     ],
     sandbox: {
       id: 'sandbox-p4',

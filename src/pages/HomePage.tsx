@@ -64,15 +64,27 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Feature Pillar Strip */}
-        <div className="relative mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-200/80 pt-7 dark:border-slate-800">
+        <div className="relative mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-slate-200/80 pt-7 dark:border-slate-800">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-blue-50 p-2.5 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
               <LineChart className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold">10 个 60fps 交互实验室</div>
+              <div className="text-sm font-semibold">16 个 60fps 交互实验室</div>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                原生 Canvas/SVG 实时演算，拖动超参数与画布加点零延迟反馈。
+                涵盖 LASSO、SwiGLU、BN/LN、FLOPs、MoE、CFG、Cliff Walking 等。
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="rounded-xl bg-indigo-50 p-2.5 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold">讲义级全覆盖 + 分步手算</div>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                18 个子讲义精讲卡片 + 对标书面作业的高频推导渐进演练。
               </p>
             </div>
           </div>
@@ -82,7 +94,7 @@ export const HomePage: React.FC = () => {
               <Code2 className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-sm font-semibold">公式 ↔ 代码双向联动</div>
+              <div className="text-sm font-semibold">13 组公式 ↔ 代码联动</div>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 悬停公式子项自动高亮 NumPy / PyTorch 代码行并显示张量 Shape。
               </p>
