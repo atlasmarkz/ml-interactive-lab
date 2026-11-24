@@ -5,6 +5,7 @@ import { LECTURES, LECTURE_GROUPS } from '../data/lectures';
 import { ALL_CARDS, ALL_QUESTIONS } from '../data/review';
 import { isDue, useProgress } from '../utils/progress';
 import { StatusDot } from './review/ReviewBits';
+import { Celebrations } from './review/Celebrations';
 import { REVIEW_NAV } from '../pages/review/PageHeader';
 
 interface LayoutProps {
@@ -186,6 +187,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
           {children}
         </main>
       </div>
+      <Celebrations />
     </div>
   );
 };

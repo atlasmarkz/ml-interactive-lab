@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export const REVIEW_NAV = [
-  { to: '/review', label: '复习总览' },
+  { to: '/review', label: '学习总览' },
   { to: '/review/flashcards', label: '抽认卡' },
   { to: '/review/quiz', label: '练习与错题' },
   { to: '/review/formulas', label: '公式速查' },

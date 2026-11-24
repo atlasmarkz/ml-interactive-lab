@@ -5,6 +5,7 @@ import { LECTURES, LECTURE_GROUPS } from '../data/lectures';
 import { ALL_CARDS, ALL_QUESTIONS, getReviewPack } from '../data/review';
 import { isDue, useProgress } from '../utils/progress';
 import { StatusDot } from '../components/review/ReviewBits';
+import { Dashboard } from '../components/review/Dashboard';
 
 const PILLARS = [
   { tag: '01 · KEY POINTS', title: '考点速记与公式默写', body: '每讲 4–7 条必记结论和核心公式，可遮挡公式做主动回忆。' },
@@ -62,6 +63,8 @@ export const HomePage: React.FC = () => {
           ))}
         </div>
       </header>
+
+      <Dashboard />
 
       <section className="space-y-9">
         {LECTURE_GROUPS.map((group) => {

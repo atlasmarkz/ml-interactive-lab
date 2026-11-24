@@ -1,8 +1,9 @@
 /**
  * Local-only study progress: lecture status, checklist ticks, flashcard
- * scheduling (a small SM-2 variant) and quiz history. Everything lives in
- * localStorage so the static site keeps working without a backend; the
- * Review Hub offers JSON export / import to move progress between devices.
+ * scheduling (a small SM-2 variant), quiz history and a per-day activity log
+ * (for the GitHub-style heatmap, streaks, daily goal and achievements).
+ * Everything lives in localStorage so the static site keeps working without
+ * a backend; the Review Hub offers JSON export / import between devices.
  */
 import { useSyncExternalStore } from 'react';
 
@@ -29,22 +30,40 @@ export interface Progress {
   lectures: Record<string, { status: LectureStatus; checked: number[] }>;
   cards: Record<string, CardState>;
   quiz: Record<string, QuizState>;
-  /** Epoch days on which the user reviewed anything (for the streak). */
+  /** Epoch days on which the user reviewed anything (kept for older exports). */
   activeDays: number[];
+  /** Number of reviews (card ratings + answered questions) per epoch day. */
+  activity: Record<string, number>;
+  /** Daily review goal. */
+  goal: number;
+  /** Small one-off facts used by fun achievements (e.g. 'night-owl'). */
+  flags: string[];
 }
 
 const KEY = 'ml-lab-progress-v1';
-const EMPTY: Progress = { version: 1, lectures: {}, cards: {}, quiz: {}, activeDays: [] };
+const EMPTY: Progress = { version: 1, lectures: {}, cards: {}, quiz: {}, activeDays: [], activity: {}, goal: 20, flags: [] };
+export const GOAL_OPTIONS = [10, 20, 30, 50];
 
 export const today = (): number => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
+/** Calendar date of an epoch day (local). */
+export const dayToDate = (d: number) => new Date(d * 86400000 + new Date().getTimezoneOffset() * 60000);
+
+function normalise(parsed: Partial<Progress>): Progress {
+  const p: Progress = { ...EMPTY, ...parsed, version: 1 };
+  p.activity = { ...(parsed.activity ?? {}) };
+  // migrate: days recorded before per-day counts existed count as one review
+  for (const d of p.activeDays ?? []) if (!p.activity[d]) p.activity[d] = 1;
+  p.flags = parsed.flags ?? [];
+  p.goal = parsed.goal ?? 20;
+  return p;
+}
 
 function load(): Progress {
   if (typeof window === 'undefined') return EMPTY;
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as Partial<Progress>;
-    return { ...EMPTY, ...parsed, version: 1 };
+    return normalise(JSON.parse(raw) as Partial<Progress>);
   } catch {
     return EMPTY;
   }
@@ -63,9 +82,18 @@ function commit(next: Progress) {
   listeners.forEach((l) => l());
 }
 
-function markActive(p: Progress): number[] {
+/** Count one review for today and remember time-of-day flags. */
+function bump(p: Progress): Pick<Progress, 'activity' | 'activeDays' | 'flags'> {
   const d = today();
-  return p.activeDays.includes(d) ? p.activeDays : [...p.activeDays, d].slice(-400);
+  const hour = new Date().getHours();
+  const flags = [...p.flags];
+  if (hour < 5 && !flags.includes('night-owl')) flags.push('night-owl');
+  if (hour >= 5 && hour < 7 && !flags.includes('early-bird')) flags.push('early-bird');
+  return {
+    activity: { ...p.activity, [d]: (p.activity[d] ?? 0) + 1 },
+    activeDays: p.activeDays.includes(d) ? p.activeDays : [...p.activeDays, d].slice(-400),
+    flags,
+  };
 }
 
 if (typeof window !== 'undefined') {
@@ -77,15 +105,13 @@ if (typeof window !== 'undefined') {
   });
 }
 
+export function subscribe(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
 export function useProgress(): Progress {
-  return useSyncExternalStore(
-    (cb) => {
-      listeners.add(cb);
-      return () => listeners.delete(cb);
-    },
-    () => state,
-    () => EMPTY
-  );
+  return useSyncExternalStore(subscribe, () => state, () => EMPTY);
 }
 
 export function getProgress(): Progress {
@@ -102,6 +128,10 @@ export function toggleChecklist(lectureId: string, index: number) {
   const checked = cur.checked.includes(index) ? cur.checked.filter((i) => i !== index) : [...cur.checked, index];
   const status: LectureStatus = cur.status === 'new' && checked.length > 0 ? 'learning' : cur.status;
   commit({ ...state, lectures: { ...state.lectures, [lectureId]: { status, checked } } });
+}
+
+export function setGoal(goal: number) {
+  commit({ ...state, goal });
 }
 
 /** SM-2-style scheduling with four buttons. Returns the new state. */
@@ -123,7 +153,7 @@ export function schedule(prev: CardState | undefined, rating: Rating): CardState
 
 export function rateCard(cardId: string, rating: Rating) {
   const next = schedule(state.cards[cardId], rating);
-  commit({ ...state, cards: { ...state.cards, [cardId]: next }, activeDays: markActive(state) });
+  commit({ ...state, cards: { ...state.cards, [cardId]: next }, ...bump(state) });
 }
 
 export function recordAnswer(questionId: string, correct: boolean) {
@@ -134,7 +164,7 @@ export function recordAnswer(questionId: string, correct: boolean) {
     lastCorrect: correct,
     lastAt: Date.now(),
   };
-  commit({ ...state, quiz: { ...state.quiz, [questionId]: next }, activeDays: markActive(state) });
+  commit({ ...state, quiz: { ...state.quiz, [questionId]: next }, ...bump(state) });
 }
 
 export function isDue(cardId: string, p: Progress = state): boolean {
@@ -142,8 +172,10 @@ export function isDue(cardId: string, p: Progress = state): boolean {
   return !c || c.due <= today();
 }
 
+const activeSet = (p: Progress) => new Set(Object.entries(p.activity).filter(([, n]) => n > 0).map(([d]) => Number(d)));
+
 export function streak(p: Progress = state): number {
-  const days = new Set(p.activeDays);
+  const days = activeSet(p);
   let d = today();
   if (!days.has(d)) d -= 1; // today not studied yet: count up to yesterday
   let n = 0;
@@ -154,6 +186,20 @@ export function streak(p: Progress = state): number {
   return n;
 }
 
+export function longestStreak(p: Progress = state): number {
+  const days = [...activeSet(p)].sort((a, b) => a - b);
+  let best = 0, run = 0, prev = -Infinity;
+  for (const d of days) {
+    run = d === prev + 1 ? run + 1 : 1;
+    best = Math.max(best, run);
+    prev = d;
+  }
+  return best;
+}
+
+export const todayCount = (p: Progress = state) => p.activity[today()] ?? 0;
+export const totalReviews = (p: Progress = state) => Object.values(p.activity).reduce((a, b) => a + b, 0);
+
 export function exportProgress(): string {
   return JSON.stringify(state, null, 2);
 }
@@ -163,7 +209,7 @@ export function importProgress(json: string): void {
   if (typeof parsed !== 'object' || parsed === null || !('cards' in parsed) || !('quiz' in parsed)) {
     throw new Error('不是有效的进度文件');
   }
-  commit({ ...EMPTY, ...parsed, version: 1 });
+  commit(normalise(parsed));
 }
 
 export function resetProgress() {

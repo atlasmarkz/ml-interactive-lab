@@ -5,6 +5,8 @@ import { LECTURES, LECTURE_GROUPS } from '../../data/lectures';
 import { ALL_CARDS, ALL_QUESTIONS } from '../../data/review';
 import { LectureStatus, isDue, streak, useProgress } from '../../utils/progress';
 import { STATUS_META } from './ReviewBits';
+import { ActivityHeatmap } from './Gamify';
+import { todayCount } from '../../utils/progress';
 
 const STATUS_ORDER: LectureStatus[] = ['mastered', 'learning', 'new'];
 const STATUS_FILL: Record<LectureStatus, string> = {
@@ -17,7 +19,7 @@ const STATUS_FILL: Record<LectureStatus, string> = {
  * Course-wide review snapshot shown beside a lecture: lecture mastery by Part,
  * due cards, practice accuracy, mistakes, streak and a suggested next lecture.
  */
-export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean }> = ({ currentId, compact = false }) => {
+export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean; showHeatmap?: boolean }> = ({ currentId, compact = false, showHeatmap = true }) => {
   const p = useProgress();
 
   const s = useMemo(() => {
@@ -43,7 +45,7 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean }
   if (compact) {
     return (
       <div className="space-y-2">
-        <div className="section-kicker text-stone-400 dark:text-zinc-500">复习总进度</div>
+        <div className="section-kicker text-stone-400 dark:text-zinc-500">学习总进度</div>
         <div className="flex h-2 overflow-hidden rounded-full bg-stone-100 dark:bg-zinc-800" title={`已掌握 ${s.counts.mastered} · 复习中 ${s.counts.learning} · 未开始 ${s.counts.new}`}>
           {STATUS_ORDER.slice(0, 2).map((k) => (
             <div key={k} className={STATUS_FILL[k]} style={{ width: `${(s.counts[k] / total) * 100}%` }} />
@@ -63,7 +65,7 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean }
     <div className="space-y-5 rounded-xl border border-stone-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#11151d]">
       {/* headline */}
       <div>
-        <div className="section-kicker text-stone-400 dark:text-zinc-500">复习总进度</div>
+        <div className="section-kicker text-stone-400 dark:text-zinc-500">学习总进度</div>
         <div className="mt-1.5 flex items-end gap-2">
           <span className="font-serif-display text-[2.1rem] font-semibold leading-none tabular-nums text-stone-950 dark:text-zinc-50">{pct}%</span>
           <span className="pb-1 text-[12.5px] text-stone-500 dark:text-zinc-400">掌握 = 1，复习中 = ½</span>
@@ -148,6 +150,19 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean }
           <div className="text-[11px] text-stone-400 dark:text-zinc-500">做卡片或练习即计入</div>
         </div>
       </div>
+
+      {/* check-ins */}
+      {showHeatmap && (
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <span className="section-kicker text-stone-400 dark:text-zinc-500">打卡</span>
+          <span className="text-[12px] text-stone-500 dark:text-zinc-400">
+            今日 <b className="font-mono text-stone-900 dark:text-zinc-100">{todayCount(p)}</b>/{p.goal}
+          </span>
+        </div>
+        <ActivityHeatmap cell={11} gap={3} showLegend={false} />
+      </div>
+      )}
 
       {/* suggestion */}
       {s.next && (
