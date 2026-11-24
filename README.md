@@ -1,8 +1,8 @@
-# ML Review Companion — 机器学习学习手册
+# ML Review Companion — 机器学习手册
 
 > **Live Site:** https://ml-interactive-lab.vercel.app
 
-一个面向期末复习的交互式机器学习学习站。内容按课程讲义 **L00–L16** 逐讲组织（模块编号与 Slides 文件编号一一对应），覆盖机器学习基础、深度学习、Transformer 与 LLM、图像生成模型和强化学习。纯静态构建，零后端；复习进度只保存在浏览器 localStorage 中，可导出 / 导入 JSON。
+一个面向期末复习的交互式机器学习网站。内容按课程讲义 **L00–L16** 逐讲组织（模块编号与 Slides 文件编号一一对应），覆盖机器学习基础、深度学习、Transformer 与 LLM、图像生成模型和强化学习。纯静态构建，零后端；复习进度只保存在浏览器 localStorage 中，可导出 / 导入 JSON。
 
 ---
 

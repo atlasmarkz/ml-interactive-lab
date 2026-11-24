@@ -28,7 +28,7 @@ export const HomePage: React.FC = () => {
           Machine Learning · Interactive Review Companion
         </div>
         <h1 className="font-serif-display text-3xl sm:text-5xl font-semibold tracking-tight text-stone-950 dark:text-zinc-50 leading-tight">
-          机器学习学习手册
+          机器学习手册
         </h1>
         <p className="text-sm sm:text-base leading-relaxed text-stone-600 dark:text-zinc-400 max-w-2xl">
           按讲义 L00–L16 逐讲组织（与课程 Slides 文件编号一致），覆盖机器学习基础、深度学习、Transformer 与 LLM、图像生成模型和强化学习。每讲先给考点速记，再给推导、图解、验算器和代码，最后用抽认卡与练习题自测。

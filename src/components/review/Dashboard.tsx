@@ -38,7 +38,7 @@ export const Dashboard: React.FC = () => {
         学习看板
       </h2>
       <div className="grid gap-5 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <OverallProgress showHeatmap={false} />
+        <OverallProgress />
         <div className="space-y-5">
           <Card
             icon={CalendarDays}

@@ -5,8 +5,6 @@ import { LECTURES, LECTURE_GROUPS } from '../../data/lectures';
 import { ALL_CARDS, ALL_QUESTIONS } from '../../data/review';
 import { LectureStatus, isDue, streak, useProgress } from '../../utils/progress';
 import { STATUS_META } from './ReviewBits';
-import { ActivityHeatmap } from './Gamify';
-import { todayCount } from '../../utils/progress';
 
 const STATUS_ORDER: LectureStatus[] = ['mastered', 'learning', 'new'];
 const STATUS_FILL: Record<LectureStatus, string> = {
@@ -19,7 +17,7 @@ const STATUS_FILL: Record<LectureStatus, string> = {
  * Course-wide review snapshot shown beside a lecture: lecture mastery by Part,
  * due cards, practice accuracy, mistakes, streak and a suggested next lecture.
  */
-export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean; showHeatmap?: boolean }> = ({ currentId, compact = false, showHeatmap = true }) => {
+export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean }> = ({ currentId, compact = false }) => {
   const p = useProgress();
 
   const s = useMemo(() => {
@@ -150,19 +148,6 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean; 
           <div className="text-[11px] text-stone-400 dark:text-zinc-500">做卡片或练习即计入</div>
         </div>
       </div>
-
-      {/* check-ins */}
-      {showHeatmap && (
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="section-kicker text-stone-400 dark:text-zinc-500">打卡</span>
-          <span className="text-[12px] text-stone-500 dark:text-zinc-400">
-            今日 <b className="font-mono text-stone-900 dark:text-zinc-100">{todayCount(p)}</b>/{p.goal}
-          </span>
-        </div>
-        <ActivityHeatmap cell={11} gap={3} showLegend={false} />
-      </div>
-      )}
 
       {/* suggestion */}
       {s.next && (
