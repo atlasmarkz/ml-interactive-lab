@@ -3,6 +3,11 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { ModulePage } from './pages/ModulePage';
+import { ReviewHubPage } from './pages/review/ReviewHubPage';
+import { FlashcardsPage } from './pages/review/FlashcardsPage';
+import { QuizPage } from './pages/review/QuizPage';
+import { FormulasPage } from './pages/review/FormulasPage';
+import { AssignmentsPage } from './pages/review/AssignmentsPage';
 
 export const App: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(() => {
@@ -27,6 +32,11 @@ export const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/lecture/:slug" element={<ModulePage isDark={isDark} />} />
+          <Route path="/review" element={<ReviewHubPage />} />
+          <Route path="/review/flashcards" element={<FlashcardsPage />} />
+          <Route path="/review/quiz" element={<QuizPage />} />
+          <Route path="/review/formulas" element={<FormulasPage />} />
+          <Route path="/review/assignments" element={<AssignmentsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

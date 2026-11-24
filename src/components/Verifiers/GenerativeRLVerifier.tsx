@@ -3,11 +3,15 @@ import { InlineMath } from '../RichText';
 
 interface GenerativeRLVerifierProps {
   mode: 'l10-gen-models' | 'l11-rl-bellman-ppo';
+  /** Which sub-verifier to open first (each lecture focuses on one model). */
+  initialTab?: 'vae' | 'gan' | 'diff' | 'td' | 'ppo';
 }
 
-export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode }) => {
+export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode, initialTab }) => {
   // --- L10 State ---
-  const [genTab, setGenTab] = useState<'vae' | 'gan' | 'diff'>('vae');
+  const [genTab, setGenTab] = useState<'vae' | 'gan' | 'diff'>(
+    initialTab === 'gan' || initialTab === 'diff' ? initialTab : 'vae'
+  );
   // VAE
   const [mu, setMu] = useState(0.8);
   const [logVar, setLogVar] = useState(-0.6);
@@ -25,7 +29,7 @@ export const GenerativeRLVerifier: React.FC<GenerativeRLVerifierProps> = ({ mode
   const [epsNoise, setEpsNoise] = useState(0.8);
 
   // --- L11 State ---
-  const [rlTab, setRlTab] = useState<'td' | 'ppo'>('td');
+  const [rlTab, setRlTab] = useState<'td' | 'ppo'>(initialTab === 'ppo' ? 'ppo' : 'td');
   // TD
   const [qOld, setQOld] = useState(4.0);
   const [rew, setRew] = useState(2.0);

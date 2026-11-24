@@ -71,16 +71,38 @@ export type VerifierId =
   | 'l10-gen-models'
   | 'l11-rl-bellman-ppo';
 
+export type PartGroup =
+  | 'Part 0 · Introduction'
+  | 'Part 1 · Foundations of Machine Learning'
+  | 'Part 2 · Foundations of Deep Learning'
+  | 'Part 3 · Advanced Deep Learning'
+  | 'Part 4 · Generative Models for Images'
+  | 'Part 5 · Reinforcement Learning';
+
+/** Which interactive figure panel a lecture reuses. */
+export type FigureKey =
+  | 'L01' | 'L02.1' | 'L02.2' | 'L03'
+  | 'L04' | 'L05' | 'L06' | 'L07'
+  | 'L08' | 'L09' | 'L10' | 'L11';
+
+export type VerifierTab = 'vae' | 'gan' | 'diff' | 'td' | 'ppo';
+
 export interface LectureModule {
   id: string;
-  code: string; // e.g. "L01", "L02.1"
-  partGroup: 'Part I · Statistical & Linear Foundations' | 'Part II · Deep Learning Foundations' | 'Part III · Transformers, Generative Models & RL';
+  code: string; // e.g. "L01", "L02.1" — matches the slide file numbering
+  partGroup: PartGroup;
   slug: string;
   titleZh: string;
   titleEn: string;
+  /** Slide files this module is based on (for cross-referencing the course folder). */
+  slides: string[];
+  /** Exam weight hint: core = frequently examined, support = needed background, optional = guest / reading. */
+  examWeight: 'core' | 'support' | 'optional';
   abstract: string;
   readingChecklist: string[];
-  verifierId: VerifierId;
+  verifierId?: VerifierId;
+  verifierTab?: VerifierTab;
+  figureKey?: FigureKey;
   derivations: DerivationSpec[];
   concepts: ConceptBlock[];
   formulaSpecs: FormulaCodeSpec[];

@@ -1,0 +1,160 @@
+import { ReviewPack } from '../../types/review';
+
+const r = String.raw;
+
+export const REVIEW_PART_5: ReviewPack[] = [
+  {
+    lectureId: 'l14',
+    keyPoints: [
+      r`MDP = 状态 S、动作 A、转移 $P(s'|s,a)$、奖励 $r(s,a,s')$；目标是折扣总回报 $\sum_t\gamma^t r_t$ 的期望最大。`,
+      '已知模型 → 规划（价值迭代）；没有模型、只能交互 → 强化学习（主动收集经验）。',
+      r`价值迭代 $V_{k+1}(s) = \max_a\{r(s,a) + \gamma\sum_{s'}P(s'|s,a)V_k(s')\}$，收缩映射保证收敛到 $V^*$。`,
+      r`Q-Learning：$Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma\max_{a'}Q(s',a') - Q(s,a)]$，off-policy。`,
+      r`SARSA：TD 目标用实际选择的 $a'$，on-policy；$\epsilon$-greedy 平衡探索与利用。`,
+    ],
+    formulas: [
+      { name: '折扣回报与价值', latex: r`R(s_0) = \sum_{t\ge0}\gamma^t r_t,\qquad V^\pi(s) = \mathbb{E}_\pi[R(s)]` },
+      { name: 'Bellman 最优方程', latex: r`V^*(s) = \max_a\Big\{r(s,a) + \gamma\sum_{s'}P(s'|s,a)V^*(s')\Big\}` },
+      { name: '最优 Q 与策略', latex: r`Q^*(s,a) = r(s,a) + \gamma\sum_{s'}P(s'|s,a)\max_{a'}Q^*(s',a'),\quad \pi^*(s) = \arg\max_a Q^*(s,a)` },
+      { name: 'Q-Learning', latex: r`Q(s,a) \leftarrow Q(s,a) + \alpha\big[r + \gamma\max_{a'}Q(s',a') - Q(s,a)\big]` },
+      { name: 'SARSA', latex: r`Q(s,a) \leftarrow Q(s,a) + \alpha\big[r + \gamma Q(s',a') - Q(s,a)\big]` },
+    ],
+    flashcards: [
+      { id: 'l14-f1', front: 'RL 与监督 / 无监督学习在数据上的根本区别？', back: '监督与无监督学习的数据预先收集好；RL 的经验 (s, a, r, s′) 由智能体与环境交互自己收集，是主动学习，且没有「正确动作」标签，只有延迟的奖励。' },
+      { id: 'l14-f2', front: '规划与强化学习的区别？', back: '规划：已知 MDP 模型 P(s′|s,a) 和 r(s,a)，直接计算最优策略（如价值迭代）。RL：不知道模型，只能通过交互得到的经验学习。' },
+      { id: 'l14-f3', front: '为什么价值迭代与初值无关？', back: r`Bellman 算子是 $\gamma$-收缩映射：$\max_s|V_{k+1} - V^*| \le \gamma\max_s|V_k - V^*|$，任意初值都以几何速度收敛到唯一不动点 $V^*$。` },
+      { id: 'l14-f4', front: 'Q-Learning 的 TD 目标为什么只能小步更新？', back: '单个样本的 TD 目标是 Bellman 更新的无偏估计，但方差很大；用学习率 α 做小步更新相当于对多个样本做滑动平均。' },
+      { id: 'l14-f5', front: '为什么 Q-Learning 是 off-policy，SARSA 是 on-policy？', back: r`Q-Learning 的目标用 $\max_{a'}Q(s',a')$（贪心策略），与实际执行的 $\epsilon$-greedy 策略不同；SARSA 用当前策略实际选出的 $a'$，评估的是正在执行的策略。` },
+      { id: 'l14-f6', front: 'ε-greedy 策略？', back: '以概率 ε 随机选动作（探索），以 1 − ε 选当前 Q 值最大的动作（利用）。' },
+      { id: 'l14-f7', front: 'Q-Learning 的收敛条件？', back: '每个 (s, a) 对被更新无限多次（并满足学习率衰减条件），Q 收敛到 Q*。' },
+    ],
+    quiz: [
+      {
+        id: 'l14-q1', kind: 'calc',
+        prompt: r`$Q(s,a) = 2$，观察到 $r = 1$，$\max_{a'}Q(s',a') = 5$，$\gamma = 0.9$，$\alpha = 0.1$。Q-Learning 更新后 $Q(s,a)$ 是多少？若用 SARSA 且实际选中的 $Q(s',a') = 3$ 呢？`,
+        answer: r`Q-Learning：目标 $1 + 4.5 = 5.5$，$Q = 2 + 0.1\times3.5 = 2.35$；SARSA：目标 $1 + 2.7 = 3.7$，$Q = 2 + 0.1\times1.7 = 2.17$`,
+        explanation: '两者唯一的区别是 TD 目标中下一步动作的价值取 max 还是取实际动作。',
+        style: 'HA11 / 期末计算题型',
+      },
+      {
+        id: 'l14-q2', kind: 'calc',
+        prompt: r`两个状态的确定性 MDP：在 $s_1$ 选 stay 得 $r = 1$ 仍在 $s_1$，选 go 得 $r = 0$ 到 $s_2$；在 $s_2$ 只有 stay，$r = 2$ 仍在 $s_2$。$\gamma = 0.5$，$V_0 = 0$。求 $V_1, V_2$ 和 $V^*$。`,
+        answer: r`$V_1 = (1, 2)$；$V_2(s_1) = \max(1 + 0.5, 0 + 1) = 1.5$，$V_2(s_2) = 3$；$V^*(s_2) = 2/(1-0.5) = 4$，$V^*(s_1) = \max(1 + 0.5V^*(s_1),\ 0.5\times4) = 2$`,
+        explanation: r`$V^*(s_1)$：一直 stay 得 $1/(1-0.5) = 2$，先 go 也得 $0 + 0.5\times4 = 2$，两者相等。迭代中 $V_k(s_1)$ 依次为 1, 1.5, 1.75, …→ 2。`,
+      },
+      {
+        id: 'l14-q3', kind: 'mcq',
+        prompt: '在悬崖行走（Cliff Walking）任务中用 ε = 0.1 训练，哪个算法学到更「安全」、远离悬崖的路线？',
+        options: ['SARSA', 'Q-Learning', '两者相同', '都学不到'],
+        answer: 0,
+        explanation: 'SARSA 评估包含探索的实际策略，会考虑到贴着悬崖走时随机一步掉下去的风险；Q-Learning 评估贪心策略，学到最短但贴崖的路线。',
+      },
+    ],
+  },
+  {
+    lectureId: 'l15',
+    keyPoints: [
+      '状态太多时 Q 表不可行（Atari 像素），用神经网络 Q(s,a;θ) 近似，且能泛化到没见过的状态。',
+      r`损失 $(r + \gamma\max_{a'}Q(s',a';\theta^-) - Q(s,a;\theta))^2$，目标视为常数。`,
+      '目标网络：解决移动目标，每 C 步同步；经验回放：重复利用数据、打破相关性、加快收敛。',
+      r`max 导致高估（$\mathbb{E}\max \ge \max\mathbb{E}$）→ Double DQN：在线网络选、目标网络评。`,
+      r`优先经验回放按 TD 误差采样 $P(i) = p_i^\alpha/\sum_k p_k^\alpha$；DDPG 用 Actor-Critic 处理连续动作。`,
+    ],
+    formulas: [
+      { name: 'DQN 目标', latex: r`y = r + \gamma\max_{a'}Q(s',a';\theta^-)` },
+      { name: 'DQN 更新', latex: r`\theta \leftarrow \theta + \alpha\big(y - Q(s,a;\theta)\big)\nabla_\theta Q(s,a;\theta)` },
+      { name: 'Double DQN 目标', latex: r`a^* = \arg\max_{a'}Q(s',a';\theta),\quad y = r + \gamma\,Q(s',a^*;\theta^-)` },
+      { name: '优先经验回放', latex: r`P(i) = \frac{p_i^\alpha}{\sum_k p_k^\alpha},\quad p_i = |\delta_i| + \epsilon\ \text{或}\ \frac{1}{\mathrm{rank}(i)}` },
+    ],
+    flashcards: [
+      { id: 'l15-f1', front: '为什么需要 DQN 而不是表格 Q-Learning？', back: '状态数巨大（Atari 一帧 210×160 像素、128 色），表格存不下，且绝大多数状态从未访问过，无法为它们选动作。神经网络定义在所有状态上，可以泛化。' },
+      { id: 'l15-f2', front: '什么是「移动目标」问题？如何解决？', back: 'TD 目标 y 依赖于正在更新的参数 θ，每次更新都会改变目标，像追逐移动目标，训练不稳定。用单独的目标网络 θ⁻ 计算 y，每 C 步才同步一次。' },
+      { id: 'l15-f3', front: '经验回放的好处？', back: '1) 每条经验可被多次使用，数据效率更高；2) 每次更新基于随机抽取的多条经验，打破连续样本的相关性、收敛更快更稳。' },
+      { id: 'l15-f4', front: '为什么 DQN 会高估 Q 值？', back: r`同一个带噪估计既用来选最大动作又用来评估它；由 $\mathbb{E}[\max(X_1, X_2)] \ge \max(\mathbb{E}X_1, \mathbb{E}X_2)$，目标的期望系统性偏高。` },
+      { id: 'l15-f5', front: 'Double DQN 的改动？', back: '用在线网络 θ 选动作 a* = argmax Q(s′, a; θ)，用目标网络 θ⁻ 评估 Q(s′, a*; θ⁻)。选择与评估解耦，减少高估。' },
+      { id: 'l15-f6', front: 'Atari DQN 的输入输出？', back: '输入：最近 4 帧原始像素堆叠；输出：18 个手柄动作各自的 Q 值；奖励：分数变化。所有游戏使用相同的网络结构和超参数。' },
+      { id: 'l15-f7', front: 'DQN 为什么不能直接处理连续动作？DDPG 怎么做？', back: 'DQN 需要对所有动作取 argmax，连续动作无法枚举。DDPG 用 Critic Q(s,a) 和 Actor μ(s)，Actor 通过最大化 Q(s, μ(s)) 更新。' },
+      { id: 'l15-f8', front: 'Rainbow 包含哪些改进？', back: 'Double DQN + 优先经验回放 + Dueling 网络 + 多步学习 + 分布式 RL。' },
+    ],
+    quiz: [
+      {
+        id: 'l15-q1', kind: 'calc',
+        prompt: r`$r = 1,\ \gamma = 0.99$。在下一状态，目标网络 $Q(s',\cdot;\theta^-) = (2, 5)$，在线网络 $Q(s',\cdot;\theta) = (4, 3)$。分别求 DQN 与 Double DQN 的 TD 目标。`,
+        answer: r`DQN：$1 + 0.99\times5 = 5.95$；Double DQN：在线网络选动作 0，$1 + 0.99\times2 = 2.98$`,
+        explanation: '两个网络对哪个动作更好意见不一致时，Double DQN 的目标更保守，从而减少高估。',
+      },
+      {
+        id: 'l15-q2', kind: 'calc',
+        prompt: r`回放缓冲区中三条经验的 TD 误差绝对值为 $1, 2, 3$。用 $p_i = |\delta_i|$、$\alpha = 1$ 的优先经验回放，各自被抽中的概率？$\alpha = 0$ 呢？`,
+        answer: r`$\alpha = 1$：$1/6, 2/6, 3/6$；$\alpha = 0$：均为 $1/3$（均匀采样）`,
+        explanation: 'α 控制优先程度：0 为均匀采样，越大越偏向 TD 误差大的经验。',
+      },
+      {
+        id: 'l15-q3', kind: 'mcq',
+        prompt: '为什么 DQN 可以使用经验回放，而 REINFORCE 不能直接使用？',
+        options: ['DQN 是 off-policy，学习目标不依赖产生数据的策略', 'DQN 的网络更小', 'REINFORCE 没有神经网络', 'REINFORCE 不需要数据'],
+        answer: 0,
+        explanation: 'REINFORCE 是 on-policy：梯度是对当前策略分布的期望，旧策略的数据会带来偏差（PPO 用重要性比 + 裁剪来有限地复用）。',
+      },
+    ],
+  },
+  {
+    lectureId: 'l16',
+    keyPoints: [
+      r`策略方法直接学随机策略 $\pi_\theta(a|s)$，最大化 $J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}[r(\tau)]$。`,
+      r`$\nabla J = \mathbb{E}[\nabla\log p_\theta(\tau)\,r(\tau)] = \mathbb{E}[\sum_t\nabla\log\pi_\theta(a_t|s_t)\,r(\tau)]$：环境转移项与 θ 无关，求导后消失。`,
+      'REINFORCE = 试错：好轨迹的动作概率上调，坏轨迹的下调；on-policy，方差大。',
+      r`降方差：reward-to-go（因果性）、基线 $b$（无偏，因为 $\mathbb{E}[\nabla\log p_\theta\,b] = 0$）、Critic。`,
+      r`Actor-Critic：$\hat A = r + \gamma\hat V(s') - \hat V(s)$；Critic 用 L2 回归 TD 目标，Actor 按 $\nabla\log\pi\cdot\hat A$ 更新。`,
+      'PPO 用裁剪概率比稳定更新；SAC 加熵奖励鼓励探索。价值方法样本效率高，策略方法更稳定。',
+    ],
+    formulas: [
+      { name: '轨迹概率', latex: r`p_\theta(\tau) = p(s_0)\prod_{t}\pi_\theta(a_t|s_t)\,p(s_{t+1}|s_t,a_t)` },
+      { name: '策略梯度', latex: r`\nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim p_\theta}\Big[\sum_t\nabla_\theta\log\pi_\theta(a_t|s_t)\,r(\tau)\Big]` },
+      { name: 'REINFORCE 估计', latex: r`\nabla_\theta J \approx \frac1N\sum_{i=1}^N\sum_t\nabla_\theta\log\pi_\theta(a_t^i|s_t^i)\Big(\sum_{t'\ge t}\gamma^{t'}r_{t'}^i - b\Big)` },
+      { name: '优势估计（Actor-Critic）', latex: r`\hat A(s_t,a_t) = r_t + \gamma\hat V(s_{t+1}) - \hat V(s_t)` },
+      { name: 'PPO-Clip', latex: r`L^{\text{CLIP}} = \mathbb{E}_t\big[\min\big(r_t\hat A_t,\ \mathrm{clip}(r_t, 1-\epsilon, 1+\epsilon)\hat A_t\big)\big],\quad r_t = \frac{\pi_\theta(a_t|s_t)}{\pi_{\text{old}}(a_t|s_t)}` },
+      { name: 'SAC 目标', latex: r`J(\pi) = \mathbb{E}\Big[\sum_t\gamma^t\big(r_t + \alpha H(\pi(\cdot|s_t))\big)\Big]` },
+    ],
+    flashcards: [
+      { id: 'l16-f1', front: 'log-derivative trick 是什么？', back: r`$\nabla_\theta p_\theta(\tau) = p_\theta(\tau)\nabla_\theta\log p_\theta(\tau)$，于是 $\nabla\int r(\tau)p_\theta(\tau)d\tau = \mathbb{E}_{p_\theta}[r(\tau)\nabla\log p_\theta(\tau)]$，可以用采样轨迹估计。` },
+      { id: 'l16-f2', front: '为什么策略梯度不需要环境模型？', back: r`$\log p_\theta(\tau) = \log p(s_0) + \sum_t\log\pi_\theta(a_t|s_t) + \sum_t\log p(s_{t+1}|s_t,a_t)$，只有中间一项依赖 θ，转移概率的梯度为 0。` },
+      { id: 'l16-f3', front: '为什么 REINFORCE 是 on-policy？', back: '用来改进当前策略的数据全部由当前策略自己采样；梯度是对当前策略轨迹分布的期望。' },
+      { id: 'l16-f4', front: '为什么策略梯度方差大？', back: '运行策略代价高，每次只能采少量轨迹（N 小）；而且整条轨迹的总回报受大量随机性（环境与动作采样）影响。' },
+      { id: 'l16-f5', front: '为什么减去基线不引入偏差？', back: r`$\mathbb{E}[\nabla\log p_\theta(\tau)\,b] = b\int\nabla p_\theta(\tau)d\tau = b\nabla\int p_\theta(\tau)d\tau = b\nabla 1 = 0$。` },
+      { id: 'l16-f6', front: '优势函数的含义？', back: r`$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$：动作 $a$ 比该状态下策略的平均表现好多少。正优势提高该动作概率，负优势降低。` },
+      { id: 'l16-f7', front: '在线 Actor-Critic 的一步？', back: '1) 按 π(a|s) 行动得 (s, a, s′, r)；2) 用 L2 损失把 V̂(s) 拟合到 r + γV̂(s′)；3) 计算 Â = r + γV̂(s′) − V̂(s)；4) θ ← θ + α∇log π(a|s)Â。' },
+      { id: 'l16-f8', front: 'A3C 的「异步」带来什么？', back: '多个学习者并行与各自的环境交互、轮流更新共享参数：数据去相关（替代经验回放），并探索环境的不同部分，学习更快。' },
+      { id: 'l16-f9', front: '为什么需要 TRPO / PPO？', back: '普通策略梯度每步只能小改：学习率大会导致性能崩溃，小则学得慢，采样轨迹也只用一次。PPO 限制新旧策略的概率比，允许安全地在同一批数据上多次更新。' },
+      { id: 'l16-f10', front: '价值方法与策略方法的优缺点？', back: '价值方法：可 off-policy、可经验回放，样本效率高；但间接，Q 难以估准，可能导致策略不稳定。策略方法：直接优化策略，更稳定，支持连续动作；但 on-policy，样本效率低。' },
+    ],
+    quiz: [
+      {
+        id: 'l16-q1', kind: 'calc',
+        prompt: r`PPO，$\epsilon = 0.2$。(a) $r_t = 1.3,\ \hat A = 2$；(b) $r_t = 0.7,\ \hat A = -1$。分别求 $L^{\text{CLIP}}$ 的取值，并判断该样本是否还提供梯度。`,
+        answer: r`(a) $\min(2.6,\ 1.2\times2) = 2.4$，被裁剪，梯度为 0；(b) $\min(-0.7,\ 0.8\times(-1)) = -0.8$，被裁剪，梯度为 0`,
+        explanation: '好动作的概率已经提高超过 20%、坏动作的概率已经降低超过 20% 时，不再继续推动，防止策略一次变化过大。',
+        style: 'HA12 相关',
+      },
+      {
+        id: 'l16-q2', kind: 'calc',
+        prompt: r`一条轨迹奖励 $(r_0, r_1, r_2) = (1, 0, 2)$，$\gamma = 0.5$。求各时刻的 reward-to-go $G_t = \sum_{t'\ge t}\gamma^{t'-t}r_{t'}$。`,
+        answer: r`$G_2 = 2$，$G_1 = 0 + 0.5\times2 = 1$，$G_0 = 1 + 0.5\times1 = 1.5$`,
+        explanation: '从后往前递推 G_t = r_t + γG_{t+1}。时刻 t 的动作只用 G_t 加权，不受更早奖励影响。',
+      },
+      {
+        id: 'l16-q3', kind: 'calc',
+        prompt: r`Critic 估计 $\hat V(s) = 4$，$\hat V(s') = 5$，得到奖励 $r = 1$，$\gamma = 0.9$。优势估计是多少？Actor 会提高还是降低该动作的概率？`,
+        answer: r`$\hat A = 1 + 0.9\times5 - 4 = 1.5 > 0$，提高该动作的概率`,
+        explanation: 'Critic 的训练目标同样是 r + γV̂(s′) = 5.5。',
+      },
+      {
+        id: 'l16-q4', kind: 'mcq',
+        prompt: '下列哪个基线会让策略梯度估计产生偏差？',
+        options: [r`依赖当前动作 $a_t$ 的 $b(s_t, a_t)$`, '常数（平均回报）', r`状态价值 $\hat V(s_t)$`, '0'],
+        answer: 0,
+        explanation: '无偏性证明要求基线能提到对动作的期望之外。',
+      },
+    ],
+  },
+];

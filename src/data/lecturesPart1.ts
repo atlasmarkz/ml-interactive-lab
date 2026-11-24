@@ -4,8 +4,10 @@ export const LECTURES_PART_1: LectureModule[] = [
   {
     id: 'l01',
     code: 'L01',
-    partGroup: 'Part I · Statistical & Linear Foundations',
+    partGroup: 'Part 1 · Foundations of Machine Learning',
     slug: 'l01-linear-regression',
+    slides: ['l01.pdf', 'l01-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '线性与多项式回归、正则化与泛化基础',
     titleEn: 'Linear & Polynomial Regression, Regularization & Capacity',
     abstract: String.raw`建立监督学习最核心的四步框架（模型假设空间 → 损失函数 → 优化求解 → 泛化评估）。从矩阵微积分推导 OLS 与 Ridge 正规方程，深入辨析 $L_1$ LASSO 与 $L_2$ Ridge 的几何稀疏差异、为何不惩罚偏置项 $w_0$，以及高斯噪声最大似然如何自然导出均方误差。`,
@@ -171,8 +173,10 @@ plot_series(
   {
     id: 'l02-1',
     code: 'L02.1',
-    partGroup: 'Part I · Statistical & Linear Foundations',
+    partGroup: 'Part 1 · Foundations of Machine Learning',
     slug: 'l02-1-logistic-softmax',
+    slides: ['l02.1.pdf', 'l02.1-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '信息论基础、Logistic 回归与 Softmax 回归',
     titleEn: 'Information Theory, Logistic & Softmax Regression',
     abstract:
@@ -300,8 +304,10 @@ def softmax_loss_torch(W, X, y, reg=1e-2):
   {
     id: 'l02-2',
     code: 'L02.2',
-    partGroup: 'Part I · Statistical & Linear Foundations',
+    partGroup: 'Part 1 · Foundations of Machine Learning',
     slug: 'l02-2-surrogate-generative',
+    slides: ['l02.2.pdf', 'l02.2-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '分类的优化视角（凸代理损失）与生成式分类 (Naive Bayes)',
     titleEn: 'Convex Surrogate Losses & Generative Classification (Naive Bayes)',
     abstract: String.raw`跳出“只用概率建模”的单一视角：剖析为何直接最小化 $0/1$ 分类错误率在优化上不可行（梯度几乎处处为 $0$ 且非凸），从而引出 Logistic / Hinge / Exponential 凸代理上界；并深入推导生成式分类代表 Naive Bayes 的条件独立假设与参数估计。`,
@@ -378,8 +384,10 @@ def softmax_loss_torch(W, X, y, reg=1e-2):
   {
     id: 'l03',
     code: 'L03',
-    partGroup: 'Part I · Statistical & Linear Foundations',
+    partGroup: 'Part 1 · Foundations of Machine Learning',
     slug: 'l03-bias-variance',
+    slides: ['l03.pdf', 'l03-post class.pdf'],
+    examWeight: 'core',
     titleZh: '偏差-方差分解与集成学习 (Bias-Variance & Ensembles)',
     titleEn: 'Bias-Variance Decomposition, Bagging & Boosting',
     abstract: String.raw`从统计学习理论视角严格证明期望泛化误差为何必然拆分为 $\text{Bias}^2 + \text{Variance} + \sigma^2$（不可约噪声），彻底搞懂“交叉项为何严格归零”，并建立 Bagging 降方差与 Boosting 降偏差的理论桥梁。`,

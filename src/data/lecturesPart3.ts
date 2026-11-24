@@ -2,23 +2,55 @@ import { LectureModule } from '../types/curriculum';
 
 export const LECTURES_PART_3: LectureModule[] = [
   {
-    id: 'l08',
-    code: 'L08',
-    partGroup: 'Part III · Transformers, Generative Models & RL',
-    slug: 'l08-transformer-bert-llm',
-    titleZh: 'Transformer 架构、BERT、GPT 与现代大语言模型',
-    titleEn: 'Transformers, BERT, GPT, LLM Pipeline, Scaling Laws & MoE',
-    abstract: String.raw`全面覆盖 L08.1 与 L08.2 两讲精华：严格证明 Self-Attention 除以 $\sqrt{d_k}$ 的方差稳定原理、Multi-Head 子空间并行、Pre-Norm vs Post-Norm 与位置编码；对比 Encoder-Only (BERT MLM 80/10/10) 与 Decoder-Only (GPT Causal LM)；并完整梳理现代 LLM 三阶段对齐、CoT / RAG、Scaling Laws 与 MoE 稀疏路由。`,
+    id: 'l08-1',
+    code: 'L08.1',
+    partGroup: 'Part 3 · Advanced Deep Learning',
+    slug: 'l08-1-transformer-bert',
+    slides: ['l08.1.pdf', 'l08.1-postclass.pdf'],
+    examWeight: 'core',
+    titleZh: 'Transformer (I)：自注意力、多头注意力、编码器-解码器与 BERT',
+    titleEn: 'Self-Attention, Multi-Head Attention, Encoder–Decoder Transformer & BERT',
+    abstract: String.raw`Transformer 用自注意力取代 RNN 的循环结构，使序列内任意两个位置一步可达且可完全并行。本讲覆盖：单头自注意力的计算流程（$\mathbf{Q}=\mathbf{X}\mathbf{W}^Q$ 等）、为何除以 $\sqrt{d_k}$ 与 QK-Norm、多头注意力、编码器块（残差 + LayerNorm + FFN）、位置编码、解码器的因果掩码与交叉注意力，以及 BERT 的输入表示与 MLM / NSP 预训练。`,
     readingChecklist: [
-      String.raw`Self-Attention 矩阵公式、$\mathcal{O}(T^2 d)$ 复杂度与 $\mathcal{O}(1)$ 全局路径长度`,
-      String.raw`方差严格证明：为何必须除以 $\sqrt{d_k}$ 防止 Softmax 饱和`,
-      'Multi-Head Attention、Pre-Norm vs Post-Norm、Sinusoidal 位置编码（WA3 Q6）',
-      String.raw`BERT 三合一输入、MLM ($80\%/10\%/10\%$) 动机、NSP 与下游微调范式（HA06）`,
-      'GPT Causal Mask 自回归生成（HA07）与 LLM 三阶段管线 (Pretrain → SFT → RM / RLHF)',
-      'ICL / CoT / RAG、Hallucination & Jailbreaking、Scaling Laws 与 MoE 稀疏专家',
+      String.raw`自注意力四步：$\mathbf{Q},\mathbf{K},\mathbf{V}$ 投影 → 点积打分 → 行 softmax → 加权求和 $\mathbf{z}_i = \sum_j \alpha_{ij}\mathbf{v}_j$（WA3 Q5 手算题型）`,
+      String.raw`为何除以 $\sqrt{d_k}$；QK-Norm 用 $\ell_2$ 归一化 + 可学习尺度防止 softmax 饱和`,
+      String.raw`多头注意力：$h$ 个头在不同子空间并行，拼接后乘 $\mathbf{W}^O$（原论文 $d_m=512, h=8, d_v=64$）`,
+      '编码器块：Multi-Head Attention + FFN，各带残差连接与 LayerNorm；NLP 为何用 LN 而非 BN；Pre-Norm vs Post-Norm',
+      '位置编码：自注意力对输入顺序置换等变，必须注入位置信息（WA3 Q6）',
+      '解码器：因果（masked）自注意力 + 编码器-解码器交叉注意力（Q 来自解码器，K/V 来自编码器）',
+      'BERT：[CLS]/[SEP]，token + segment + position 嵌入求和；MLM 的 15% 与 80/10/10 规则；NSP',
     ],
     verifierId: 'l08-self-attention',
+    figureKey: 'L08',
     derivations: [
+      {
+        id: 'd-l081-attn-recipe',
+        title: '自注意力的手算流程（矩阵形式）',
+        goal: String.raw`给定 $T$ 个输入向量组成的 $\mathbf{X}\in\mathbb{R}^{T\times d_m}$ 和参数 $\mathbf{W}^Q, \mathbf{W}^K \in \mathbb{R}^{d_m\times d_k}$、$\mathbf{W}^V\in\mathbb{R}^{d_m\times d_v}$，写出输出 $\mathbf{Z}$ 的每一步。这是 WA3 自注意力手算题的标准做法。`,
+        steps: [
+          {
+            rule: 'Linear Projections',
+            latex: String.raw`\mathbf{Q} = \mathbf{X}\mathbf{W}^Q,\quad \mathbf{K} = \mathbf{X}\mathbf{W}^K,\quad \mathbf{V} = \mathbf{X}\mathbf{W}^V \qquad (\mathbf{q}_i = \mathbf{W}^{Q\top}\mathbf{x}_i \text{ 等})`,
+            justification: String.raw`每个 token 都同时扮演查询者、被查询者和信息提供者三种角色。若题目给 $\mathbf{W}=\mathbf{I}$，则 $\mathbf{q}_i=\mathbf{k}_i=\mathbf{v}_i=\mathbf{x}_i$。`,
+          },
+          {
+            rule: 'Scores (Dot Product, optionally Scaled)',
+            latex: String.raw`e_{ij} = \frac{\mathbf{q}_i^\top \mathbf{k}_j}{\sqrt{d_k}} \quad\Longleftrightarrow\quad \mathbf{E} = \frac{\mathbf{Q}\mathbf{K}^\top}{\sqrt{d_k}} \in \mathbb{R}^{T\times T}`,
+            justification: '第 $i$ 行是 token $i$ 对所有 token 的打分。讲义先用未缩放点积讲概念，再引入缩放；手算时按题目给的公式来。',
+          },
+          {
+            rule: 'Row-wise Softmax',
+            latex: String.raw`\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{j'} \exp(e_{ij'})}, \qquad \sum_j \alpha_{ij} = 1`,
+            justification: '每一行单独归一化。手算技巧：同一行减去最大值不改变结果；行内打分全相等时权重均匀为 $1/T$。',
+          },
+          {
+            rule: 'Weighted Sum of Values',
+            latex: String.raw`\mathbf{z}_i = \sum_{j=1}^T \alpha_{ij}\,\mathbf{v}_j \quad\Longleftrightarrow\quad \mathbf{Z} = \mathbf{A}\mathbf{V}`,
+            justification: String.raw`输出是 value 的凸组合，所以每个 $\mathbf{z}_i$ 一定落在 $\{\mathbf{v}_j\}$ 的凸包内——可用来快速检查答案是否合理。`,
+          },
+        ],
+        conclusion: String.raw`改变 $\mathbf{W}^Q$ 会改变「谁关注谁」（注意力模式），而输入向量的排列只会让输出以同样方式排列（置换等变）——这正是需要位置编码的原因。`,
+      },
       {
         id: 'd-l08-scale',
         title: String.raw`严格概率证明：为何 Scaled Dot-Product Attention 必须除以 $\sqrt{d_k}$？`,
@@ -58,12 +90,39 @@ export const LECTURES_PART_3: LectureModule[] = [
         },
       },
       {
-        heading: 'L08.2 现代 LLM 全景：三阶段管线、推理增强与 MoE',
-        body: '从基座续写模型演进为可靠助手需要 Pretraining → SFT → Alignment (Reward Model + RLHF / DPO) 三步：',
+        heading: '编码器块与解码器块的组成',
+        body: '记住每个子层「做什么」和「为什么这样设计」，简答题经常考。',
+        table: {
+          headers: ['组件', '作用', '关键细节'],
+          rows: [
+            ['Multi-Head Self-Attention', '在 $h$ 个子空间并行建模 token 间关系', '每头 $d_k = d_m / h$，总计算量与单头相当'],
+            ['Position-wise FFN', '对每个位置独立做非线性变换', '两层全连接，中间维度通常为 $4d_m$'],
+            ['Residual Connection', '梯度高速公路，便于堆深', '$\\mathbf{x} + \\text{Sublayer}(\\mathbf{x})$'],
+            ['LayerNorm', '稳定每个 token 的激活尺度', 'NLP 序列长度可变、batch 统计不稳定，所以用 LN 而非 BN'],
+            ['Pre-Norm vs Post-Norm', 'LN 放在子层之前还是残差相加之后', 'Pre-Norm 训练更稳定，现代 LLM 普遍采用'],
+            ['Positional Encoding', '注入位置信息', '自注意力本身对顺序置换等变'],
+            ['Causal (Masked) Self-Attention', '解码器只能看见当前及之前的位置', '对 $j>i$ 令 $e_{ij}=-\\infty$，softmax 后 $\\alpha_{ij}=0$'],
+            ['Cross-Attention', '解码器读取编码器信息', 'Q 来自解码器，K / V 来自编码器输出'],
+          ],
+        },
+      },
+      {
+        heading: 'QK-Norm：另一种防止 softmax 饱和的办法',
+        body: String.raw`当 $\mathbf{q}, \mathbf{k}$ 的范数变大时，点积打分会非常大，softmax 退化成接近 one-hot，梯度消失。QK-Norm 先对每个头的 $\mathbf{q}_i, \mathbf{k}_j$ 做 $\ell_2$ 归一化，再乘一个可学习的标量 $g$：`,
+        latex: String.raw`e_{ij} = g\cdot \hat{\mathbf{q}}_i^\top \hat{\mathbf{k}}_j, \qquad \hat{\mathbf{q}}_i = \frac{\mathbf{q}_i}{\|\mathbf{q}_i\|_2},\ \hat{\mathbf{k}}_j = \frac{\mathbf{k}_j}{\|\mathbf{k}_j\|_2}`,
         points: [
-          'In-Context Learning / Chain-of-Thought (CoT)：不更新梯度，在上下文中给示范或引导分步思考，本质是为复杂推理分配更多中间 Token 算力。',
-          'RAG (Retrieval-Augmented Generation)：外挂向量检索库实时注入最新事实，直接缓解静态参数知识过时与 Hallucination（幻觉）。',
-          String.raw`Scaling Laws & MoE (Mixture of Experts)：损失随计算量呈幂律下降；MoE 用轻量 Router 对每个 Token 仅激活 Top-$K$（如 $2/8$）专家 FFN，大幅解耦“总参数知识量”与“单次前向 FLOPs”（需 Load Balancing Loss 防专家路由坍塌）。`,
+          String.raw`归一化后 $\hat{\mathbf{q}}^\top\hat{\mathbf{k}} \in [-1, 1]$ 是余弦相似度，打分范围由 $g$ 控制，不再随训练无界增长。`,
+          String.raw`与除以 $\sqrt{d_k}$ 的思路相同：都在控制送入 softmax 的 logits 尺度。`,
+        ],
+      },
+      {
+        heading: 'BERT 的输入与预训练任务',
+        body: 'BERT 是只有编码器的双向 Transformer（BASE: 12 层, d=768, 12 头, 110M；LARGE: 24 层, d=1024, 16 头, 340M）。',
+        points: [
+          '输入是句对 (A, B)：以 [CLS] 开头、[SEP] 分隔；每个 token 的输入 = token 嵌入 + segment 嵌入（A/B）+ 位置嵌入。',
+          'MLM：随机选 15% 的 token 预测原词；被选中的 token 80% 换成 [MASK]、10% 换成随机词、10% 不变，以缓解预训练与微调之间的不匹配（微调时没有 [MASK]）。',
+          'NSP：用 [CLS] 的输出向量 C 判断 B 是否紧接 A（50% 正例 / 50% 随机句）。C 并不是好的句子语义摘要，要得到句向量还需微调。',
+          '总损失 = MLM 损失 + NSP 损失；下游任务在 BERT 顶部加小分类头做微调（HA06）。',
         ],
       },
     ],
@@ -117,10 +176,268 @@ def mha_attention(Q, K, V, causal=False):
     ],
   },
   {
+    id: 'l08-2',
+    code: 'L08.2',
+    partGroup: 'Part 3 · Advanced Deep Learning',
+    slug: 'l08-2-llm-decoder-only',
+    slides: ['l08.2.pdf', 'l08.2-postclass.pdf'],
+    examWeight: 'core',
+    titleZh: 'Transformer (II)：仅解码器模型与大语言模型 (LLM)',
+    titleEn: 'Decoder-Only Transformers: LLM Training Pipeline, Prompting, RAG, LoRA, Scaling & MoE',
+    abstract: String.raw`生成式 LLM 基于仅解码器 Transformer，逐 token 自回归生成。本讲按「怎么训练 → 怎么使用 → 注意什么 → 如何扩展」组织：预训练（下一个 token 预测）→ 监督微调 SFT → 对齐（Bradley–Terry 奖励模型 + RLHF/PPO，或 DPO）；上下文学习、CoT、RAG、LoRA；幻觉与越狱；Scaling Laws 与 Mixture of Experts。`,
+    readingChecklist: [
+      '自回归生成：计算下一个 token 的分布 → 采样（贪心 / 温度）→ 追加 → 重复直到 EOS',
+      String.raw`预训练损失 $-\sum_i \log P(x_i \mid x_{i-k},\dots,x_{i-1})$，$k$ 为上下文窗口`,
+      String.raw`SFT：在示范数据 $(x, y)$ 上最小化 $-\log P(y\mid x)$；为什么需要 SFT 和对齐两个阶段`,
+      String.raw`奖励模型：Bradley–Terry 偏好概率 $P(y_w \succ y_l\mid x) = \sigma(r(x,y_w) - r(x,y_l))$ 与其损失`,
+      'RLHF：用 PPO 最大化奖励模型给出的奖励；DPO 不做强化学习直接用偏好数据优化',
+      '上下文学习（zero-/few-shot）、Chain-of-Thought、RAG（检索 → 增强 → 生成）、LoRA 低秩微调',
+      '使用风险：幻觉、越狱、偏见、隐私、安全、过度依赖',
+      String.raw`Scaling Laws；MoE：门控 $G(\mathbf{x}) = \mathrm{softmax}(\mathbf{W}_g\mathbf{x} + \mathbf{b}_g)$ + Top-$k$ 稀疏激活与负载均衡`,
+    ],
+    derivations: [
+      {
+        id: 'd-l082-bt',
+        title: 'Bradley–Terry 奖励模型损失的推导',
+        goal: String.raw`给定偏好数据 $\mathcal{D}=\{(x, y_w, y_l)\}$（$y_w$ 比 $y_l$ 更受人类偏好），推导训练奖励函数 $r(x, y)$ 的损失。`,
+        steps: [
+          {
+            rule: 'Bradley–Terry Preference Model',
+            latex: String.raw`P(y_w \succ y_l \mid x) = \frac{\exp(r(x, y_w))}{\exp(r(x, y_w)) + \exp(r(x, y_l))}`,
+            justification: '把两个回答的奖励看成「得分」，偏好概率是两类 softmax。奖励越高的回答越可能被偏好。',
+          },
+          {
+            rule: 'Divide Numerator and Denominator',
+            latex: String.raw`P(y_w \succ y_l \mid x) = \frac{1}{1 + \exp\!\big(-(r(x,y_w) - r(x,y_l))\big)} = \sigma\big(r(x, y_w) - r(x, y_l)\big)`,
+            justification: String.raw`分子分母同除 $\exp(r(x,y_w))$。偏好概率只依赖奖励差，因此奖励只确定到一个常数平移。`,
+          },
+          {
+            rule: 'Maximum Likelihood ⇒ Negative Log Loss',
+            latex: String.raw`\mathcal{L}(r) = -\,\mathbb{E}_{(x, y_w, y_l)\sim\mathcal{D}}\Big[\log \sigma\big(r(x, y_w) - r(x, y_l)\big)\Big]`,
+            justification: '对偏好数据做最大似然，就是一个以「哪个更好」为标签的二分类交叉熵。',
+          },
+        ],
+        conclusion: String.raw`训练好的 $r(x,y)$ 随后作为 RLHF 的奖励信号：$\max_\pi \mathbb{E}_{x\sim\mathcal{D},\,y\sim\pi(\cdot|x)}[r(x,y)]$（实践中再加对 SFT 模型的 KL 惩罚）。`,
+      },
+      {
+        id: 'd-l082-lora',
+        title: 'LoRA：为什么低秩适配能省下 99% 的可训练参数',
+        goal: String.raw`对一个冻结的预训练权重 $\mathbf{W}_0 \in \mathbb{R}^{d\times k}$，只学习一个低秩增量，计算参数量。`,
+        steps: [
+          {
+            rule: 'Low-Rank Update',
+            latex: String.raw`\mathbf{W} = \mathbf{W}_0 + \Delta\mathbf{W} = \mathbf{W}_0 + \mathbf{B}\mathbf{A}, \qquad \mathbf{B}\in\mathbb{R}^{d\times r},\ \mathbf{A}\in\mathbb{R}^{r\times k},\ r \ll \min(d,k)`,
+            justification: String.raw`$\mathbf{W}_0$ 冻结不更新，只训练 $\mathbf{A}, \mathbf{B}$；$\mathbf{B}$ 初始化为 $0$，所以训练开始时模型与原模型完全一致。`,
+          },
+          {
+            rule: 'Parameter Count',
+            latex: String.raw`\#\text{full} = dk, \qquad \#\text{LoRA} = r(d + k); \qquad d=k=1000,\ r=10:\ \ 10^6 \ \text{vs}\ 2\times 10^4`,
+            justification: '讲义中的例子：1000×1000 的矩阵用秩 10 的适配器，可训练参数从 100 万降到 2 万（2%）。',
+          },
+        ],
+        conclusion: '推理时可把 $\\mathbf{B}\\mathbf{A}$ 合并回 $\\mathbf{W}_0$，不增加推理延迟；不同任务只需存储各自的小适配器。',
+      },
+    ],
+    concepts: [
+      {
+        heading: 'LLM 三阶段训练管线',
+        body: '预训练得到的模型只会「续写」，不一定有用、也不一定安全，所以还需要 SFT 和对齐。',
+        table: {
+          headers: ['阶段', '数据', '损失 / 方法', '得到什么'],
+          rows: [
+            ['1. Pretraining', '海量无标注文本（数十亿到数万亿 token）', String.raw`下一个 token 预测 $-\log P(x_i\mid x_{<i})$`, '通用语言表示与知识，但与任务无关'],
+            ['2. SFT', '人工示范 (prompt, response)', String.raw`$-\log P(y\mid x)$`, '能按指令完成任务的 SFT 模型'],
+            ['3a. Reward Model', '偏好对 $(x, y_w, y_l)$', String.raw`$-\log\sigma(r(x,y_w) - r(x,y_l))$`, '给回答打分的 $r(x, y)$'],
+            ['3b. RLHF', 'prompt + 策略自己生成的回答', String.raw`PPO 最大化 $\mathbb{E}[r(x,y)]$（加 KL 约束）`, '更符合人类偏好、更安全的模型'],
+            ['3b′. DPO', '偏好对', '直接用偏好数据优化策略，不训练显式奖励模型、不做 RL', '效果相近、实现更简单'],
+          ],
+        },
+      },
+      {
+        heading: '监督学习 vs RLHF：训练信号的本质区别',
+        body: '讲义的板书对比：',
+        points: [
+          String.raw`SFT 是最大化观测到的回答的概率：$\max_\theta \mathbb{E}[\log P_\theta(y\mid x)]$，只会模仿给定示范。`,
+          String.raw`RLHF 是让策略自己生成回答，再用奖励加权：$\max_\theta \mathbb{E}[\log \pi_\theta(y\mid x)\, r(x,y)]$——提高高奖励轨迹的概率、降低低奖励轨迹的概率，本质是试错（L16 的策略梯度）。`,
+          '因此 RLHF 涉及的输出远多于前两个阶段：需要不断采样新回答。',
+        ],
+      },
+      {
+        heading: '如何使用 LLM：Prompting、RAG 与微调',
+        body: '按「是否更新参数」区分：',
+        table: {
+          headers: ['方法', '是否更新参数', '要点'],
+          rows: [
+            ['Zero-shot / Few-shot (ICL)', '否', '在 prompt 中给 0 个或几个示例，模型在上下文中完成任务'],
+            ['Chain-of-Thought', '否', '示例中展示推理过程，模型也会逐步推理，复杂问题准确率更高'],
+            ['RAG', '否', '先检索相关文档，把内容加入 prompt，再生成；缓解知识过时与幻觉'],
+            ['LoRA / Adapter', '是（少量）', '冻结原模型，只训练低秩增量或小适配器'],
+            ['Full Fine-tuning', '是（全部）', '效果最好但成本最高'],
+          ],
+        },
+      },
+      {
+        heading: 'L08.2 现代 LLM 全景：三阶段管线、推理增强与 MoE',
+        body: '从基座续写模型演进为可靠助手需要 Pretraining → SFT → Alignment (Reward Model + RLHF / DPO) 三步：',
+        points: [
+          'In-Context Learning / Chain-of-Thought (CoT)：不更新梯度，在上下文中给示范或引导分步思考，本质是为复杂推理分配更多中间 Token 算力。',
+          'RAG (Retrieval-Augmented Generation)：外挂向量检索库实时注入最新事实，直接缓解静态参数知识过时与 Hallucination（幻觉）。',
+          String.raw`Scaling Laws & MoE (Mixture of Experts)：损失随计算量呈幂律下降；MoE 用轻量 Router 对每个 Token 仅激活 Top-$K$（如 $2/8$）专家 FFN，大幅解耦“总参数知识量”与“单次前向 FLOPs”（需 Load Balancing Loss 防专家路由坍塌）。`,
+        ],
+      },
+      {
+        heading: '使用 LLM 的注意事项',
+        body: '讲义列出的六类风险：',
+        points: [
+          '幻觉（Hallucination）：生成看似可信但错误的内容，甚至编造不存在的参考文献——务必核实。',
+          '越狱（Jailbreaking）：通过角色扮演等提示绕过安全机制；需要稳健的审核与过滤。',
+          '偏见与公平、数据隐私、安全风险（钓鱼、恶意代码）、过度依赖：LLM 是工具，不是唯一决策者。',
+        ],
+      },
+    ],
+    formulaSpecs: [
+      {
+        id: 'fc-l082-rm',
+        title: 'Bradley–Terry 奖励模型损失',
+        subtitle: '偏好对上的二分类交叉熵（HA12 RLHF 的奖励模型部分）',
+        latex: String.raw`\htmlClass{formula-token formula-token-loss token-loss}{\mathcal{L}(r)} = -\log \sigma\big(\htmlClass{formula-token formula-token-output token-rw}{r(x, y_w)} - \htmlClass{formula-token formula-token-data token-rl}{r(x, y_l)}\big)`,
+        numpyCode: `import numpy as np
+
+def reward_model_loss(r_chosen, r_rejected):
+    # r_*: (B,) scalar rewards from the reward head
+    margin = r_chosen - r_rejected
+    # -log(sigmoid(m)) = log(1 + exp(-m)), computed stably
+    return np.mean(np.logaddexp(0.0, -margin))`,
+        pytorchCode: `import torch.nn.functional as F
+
+def reward_model_loss(r_chosen, r_rejected):
+    return -F.logsigmoid(r_chosen - r_rejected).mean()`,
+        terms: [
+          { id: 'rw', label: String.raw`被偏好回答的奖励 $r(x, y_w)$`, role: 'output', shape: '(B,)', explanation: '奖励头对 chosen 回答的标量输出。', numpyLines: [3, 5], pytorchLines: [3, 4] },
+          { id: 'rl', label: String.raw`被拒绝回答的奖励 $r(x, y_l)$`, role: 'data', shape: '(B,)', explanation: '同一 prompt 下较差的回答。', numpyLines: [3, 5], pytorchLines: [3, 4] },
+          { id: 'loss', label: '负对数似然', role: 'loss', shape: 'scalar', explanation: String.raw`用 $\log(1+e^{-m})$ 的稳定写法，避免 $\sigma(m)\to 0$ 时 $\log 0$。`, numpyLines: [6, 7], pytorchLines: [4] },
+        ],
+      },
+      {
+        id: 'fc-l082-sample',
+        title: '自回归生成中的温度采样',
+        subtitle: String.raw`温度 $\tau \to 0$ 退化为贪心解码，$\tau$ 越大分布越平坦`,
+        latex: String.raw`P(x_{t} = w \mid x_{<t}) = \frac{\exp(\htmlClass{formula-token formula-token-output token-z}{z_w} / \htmlClass{formula-token formula-token-hyper token-tau}{\tau})}{\sum_{w'} \exp(z_{w'} / \tau)}`,
+        numpyCode: `import numpy as np
+
+def sample_next(logits, tau=1.0, rng=np.random.default_rng()):
+    if tau == 0:
+        return int(np.argmax(logits))          # greedy
+    z = logits / tau
+    p = np.exp(z - z.max())
+    p /= p.sum()
+    return int(rng.choice(len(p), p=p))`,
+        terms: [
+          { id: 'z', label: String.raw`logits $z_w$`, role: 'output', shape: '(V,)', explanation: '最后一层对词表的打分。', numpyLines: [3, 6] },
+          { id: 'tau', label: String.raw`温度 $\tau$`, role: 'hyper', shape: 'scalar', explanation: '控制随机性：低温更确定、高温更多样。', numpyLines: [4, 5, 6] },
+        ],
+      },
+    ],
+    pitfalls: [
+      {
+        title: 'RLHF 只最大化奖励会导致 reward hacking',
+        detail: String.raw`奖励模型只是人类偏好的近似。若无约束地最大化 $r(x,y)$，策略会钻奖励模型的空子（例如回答越来越长）。实践中在目标里加入 $-\beta\, D_{\mathrm{KL}}(\pi_\theta \,\|\, \pi_{\text{SFT}})$ 让策略不要偏离 SFT 模型太远（HA12）。`,
+      },
+      {
+        title: 'MoE 的总参数量 ≠ 每个 token 的计算量',
+        detail: String.raw`$E$ 个专家、Top-$k$ 激活时，每个 token 只经过 $k$ 个 FFN，计算量约为稠密模型的 $k/E$（FFN 部分）；但所有专家的参数都要放在显存里。还需要负载均衡损失，否则门控会把 token 集中到少数专家。`,
+      },
+      {
+        title: 'ICL / CoT 不更新任何参数',
+        detail: '简答题常问「in-context learning 是不是微调」：不是。它只改变输入 prompt，模型参数完全不变；LoRA 才是参数高效微调。',
+      },
+    ],
+    sandbox: {
+      id: 'sb-l082',
+      title: 'Pyodide 实测：温度如何改变下一个 token 的分布',
+      description: '对同一组 logits 用不同温度计算 softmax，观察分布从「几乎 one-hot」到「接近均匀」的变化。',
+      starterCode: `import numpy as np
+
+logits = np.array([3.0, 2.2, 1.5, 0.3, -0.5, -1.0])
+idx = np.arange(len(logits))
+curves = {}
+for tau in [0.3, 0.7, 1.0, 2.0]:
+    z = logits / tau
+    p = np.exp(z - z.max()); p /= p.sum()
+    curves[f"tau={tau}"] = (idx, p)
+    print(f"tau={tau}: top-1 prob = {p.max():.3f}, entropy = {-(p*np.log(p)).sum():.3f}")
+plot_series("Next-token distribution under different temperatures", curves, xlabel="token index", ylabel="probability")
+`,
+    },
+  },
+  {
+    id: 'l08-3',
+    code: 'L08.3',
+    partGroup: 'Part 3 · Advanced Deep Learning',
+    slug: 'l08-3-agentic-ai',
+    slides: ['l08.3-AgentAI-Part1.pptx', 'l08.3-AgentAI-Part2.html'],
+    examWeight: 'optional',
+    titleZh: '客座讲座：Agentic AI 与智能体工程',
+    titleEn: 'Guest Lecture: AI Agents, Agentic Loops, Harness Engineering & Multi-Agent Systems',
+    abstract: String.raw`客座讲座，概念性内容为主（考试权重较低）。核心区分：LLM 根据上下文生成回答，而 AI Agent 用 LLM 来规划、调用工具、跟踪进度并根据结果行动。讲座梳理了智能体的能力构成（自主、记忆、推理、工具）、从 Prompt 工程到 Context 工程再到 Harness 工程的演进、智能体循环、多智能体协作，以及安全与局限。`,
+    readingChecklist: [
+      'LLM vs AI Agent：一次性生成 vs 规划—调用工具—观察—迭代的闭环',
+      'Agent 的四个要素：Autonomy（自主）、Memory（记忆）、Reasoning（推理/规划）、Tool use（工具）',
+      'Prompt Engineering → Context Engineering → Harness Engineering 三层',
+      '演进阶段：LLM → Copilot → 工作流编排（n8n / Dify / LangChain）→ Agentic Loop → 多智能体团队',
+      '工程挑战：长任务上下文管理、记忆、可靠执行、安全护栏与沙箱隔离',
+    ],
+    derivations: [],
+    concepts: [
+      {
+        heading: 'LLM 与 AI Agent 的区别',
+        body: 'LLM 是 Agent 的「大脑」，但 Agent 还包括循环、工具和状态。',
+        table: {
+          headers: ['维度', 'LLM', 'AI Agent'],
+          rows: [
+            ['交互方式', '输入上下文 → 输出一次回答', '目标驱动的多步循环：思考 → 选工具 → 执行 → 观察 → 再思考'],
+            ['能力边界', '只能生成文本', '可调用搜索、代码执行、文件、浏览器、API 等外部工具'],
+            ['状态', '无持久状态（只有当前上下文）', '有短期上下文与长期记忆（偏好、经验、知识）'],
+            ['人类参与', '每次都需要提问', '自主推进，在关键节点设置人工检查点'],
+          ],
+        },
+      },
+      {
+        heading: '智能体工程的三层',
+        body: '讲座把智能体工程概括为由内到外的三层：',
+        points: [
+          'Prompt Engineering：通过清晰的指令、结构与示例改进单次回答。',
+          'Context Engineering：管理检索到的知识、记忆、工具定义与对话历史——决定模型「看到什么」。',
+          'Harness Engineering：组织工具、校验、执行控制、失败恢复与评估——决定 Agent 如何可靠地「做事」。',
+          '多智能体系统还需要协调：动态组队、角色分工、共享经验、可暂停/恢复的工作流与人类参与。',
+        ],
+      },
+      {
+        heading: '局限与安全',
+        body: '真实部署时需要关注：',
+        points: [
+          '长任务会撑爆上下文：需要归档低优先级内容、保留索引、按需检索。',
+          '执行风险：生成的代码与外部工具可能产生副作用，需要沙箱隔离、凭证代理与技能扫描。',
+          '可靠性：长会话中的状态、失败与恢复；用执行轨迹定位失败并持续改进。',
+        ],
+      },
+    ],
+    formulaSpecs: [],
+    pitfalls: [
+      {
+        title: 'Agent 不等于「更大的 LLM」',
+        detail: '能力提升主要来自循环、工具与上下文管理等系统设计，而不是模型参数本身；同一个 LLM 放进不同的 harness，表现可以差别很大。',
+      },
+    ],
+  },
+  {
     id: 'l09',
     code: 'L09',
-    partGroup: 'Part III · Transformers, Generative Models & RL',
+    partGroup: 'Part 3 · Advanced Deep Learning',
     slug: 'l09-vit-clip',
+    slides: ['l09.pdf'],
+    examWeight: 'core',
+    figureKey: 'L09',
     titleZh: '视觉 Transformer (ViT) 与图文对比预训练 (CLIP)',
     titleEn: 'Vision Transformers (ViT) & Contrastive Language-Image Pretraining',
     abstract:
@@ -219,292 +536,5 @@ def clip_loss_torch(I_emb, T_emb, logit_scale):
         detail: String.raw`若把 Patch Size 从 $16$ 减半为 $8$，Patch 数量 $N$ 变为 $4$ 倍，而 Self-Attention 矩阵 $N \times N$ 暴增为 $16$ 倍！这是高分辨率视觉模型必须采用窗口注意力或更大 Patch 的原因。`,
       },
     ],
-  },
-  {
-    id: 'l10',
-    code: 'L10',
-    partGroup: 'Part III · Transformers, Generative Models & RL',
-    slug: 'l10-generative-models',
-    titleZh: '深度生成模型：VAE、GAN、Diffusion 与 Flow Matching',
-    titleEn: 'VAE (ELBO), GAN (JSD), DDPM Diffusion & Flow Matching',
-    abstract: String.raw`完整推导现代图像生成四大基石的底层数学：VAE 变分下界 ELBO 与重参数化；GAN 最优判别器 $D^*(x) \to \text{JSD}$ 证明及非饱和损失动机；DDPM 闭式前向加噪、反向采样公式与 CFG；以及新一代 Flow Matching 直线条件速度场推导（直击 WA4 全部 $4$ 道大题）。`,
-    readingChecklist: [
-      String.raw`VAE 精确恒等式 $\log p(\mathbf{x}) = \text{ELBO} + D_{\text{KL}}(q(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}|\mathbf{x}))$ 与第一项为何等于重建误差（WA4 Q1）`,
-      String.raw`Reparameterization Trick $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\varepsilon}$ 恢复随机节点梯度流`,
-      String.raw`GAN 最优判别器 $D^*(x)$、JSD 等价证明与 $L_1 = -\log D$ vs $L_2 = \log(1-D)$ 梯度危机（WA4 Q2）`,
-      'DDPM 一步闭式加噪、简化噪声回归损失与完整反向采样公式逐项含义（WA4 Q3）',
-      String.raw`Flow Matching 期望参数、插值状态 $\mathbf{x}_t$、速度场 $\mathbf{v}_\theta(\mathbf{x}_t, t)$ 与常速度目标 $\mathbf{x}_1 - \mathbf{x}_0$（WA4 Q4）`,
-    ],
-    verifierId: 'l10-gen-models',
-    derivations: [
-      {
-        id: 'd-l10-vae',
-        title: '零跳步推导 VAE 的 Evidence Lower Bound (ELBO) 精确恒等式',
-        goal: String.raw`证明为何直接最大化不可解的边际似然 $\log p_\theta(\mathbf{x})$ 可转化为最大化 $\text{ELBO} = \mathbb{E}_{q_\phi}[\log p_\theta(\mathbf{x}\mid \mathbf{z})] - D_{\text{KL}}\!\big(q_\phi(\mathbf{z}\mid \mathbf{x}) \,\|\, p(\mathbf{z})\big)$。`,
-        steps: [
-          {
-            rule: String.raw`Multiply by $q_\phi(\mathbf{z}|\mathbf{x})$ & Apply Bayes Rule`,
-            latex: String.raw`\log p_\theta(\mathbf{x}) = \mathbb{E}_{\mathbf{z}\sim q_\phi(\mathbf{z}|\mathbf{x})}\!\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{p_\theta(\mathbf{z}\mid \mathbf{x})}\right] = \mathbb{E}_{q_\phi}\!\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})} \cdot \frac{q_\phi(\mathbf{z}|\mathbf{x})}{p_\theta(\mathbf{z}|\mathbf{x})}\right]`,
-            justification: String.raw`因为 $\log p_\theta(\mathbf{x})$ 与 $\mathbf{z}$ 无关，可写成关于任意近似后验 $q_\phi(\mathbf{z}\mid \mathbf{x})$ 的期望；随后分子分母同乘 $q_\phi(\mathbf{z}\mid \mathbf{x})$。`,
-          },
-          {
-            rule: 'Split into ELBO + Posterior KL Gap',
-            latex: String.raw`\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}\!\big[\log p_\theta(\mathbf{x}\mid\mathbf{z})\big] - D_{\text{KL}}\!\big(q_\phi(\mathbf{z}|\mathbf{x})\,\|\,p(\mathbf{z})\big)}_{\text{ELBO}(\theta, \phi)} + \underbrace{D_{\text{KL}}\!\big(q_\phi(\mathbf{z}|\mathbf{x})\,\|\,p_\theta(\mathbf{z}|\mathbf{x})\big)}_{\ge\, 0}`,
-            justification: String.raw`把 $p_\theta(\mathbf{x}, \mathbf{z})$ 拆为 $p_\theta(\mathbf{x}\mid \mathbf{z})p(\mathbf{z})$。由于最后一项 KL 散度恒非负，ELBO 严格是 $\log p_\theta(\mathbf{x})$ 的下界！且最大化 ELBO 同时在拉高数据似然并逼迫近似后验 $q_\phi$ 贴近真实后验 $p_\theta(\mathbf{z}\mid \mathbf{x})$。`,
-          },
-          {
-            rule: 'Gaussian Decoder ⇒ Reconstruction MSE',
-            latex: String.raw`p_\theta(\mathbf{x}\mid\mathbf{z}) = \mathcal{N}\!\big(\mathbf{x};\, f_\theta(\mathbf{z}), \sigma^2 \mathbf{I}\big) \implies \log p_\theta(\mathbf{x}\mid\mathbf{z}) = -\frac{1}{2\sigma^2}\|\mathbf{x} - f_\theta(\mathbf{z})\|^2 + \text{const}`,
-            justification: '这就是 WA4 Q1 的精确解答：第一项条件对数似然在高斯解码假设下等价于负均方重建误差（二值像素 Bernoulli 假设下等价于负二元交叉熵）。',
-          },
-        ],
-        conclusion: 'ELBO 无需依赖 Jensen 不等式也能直接给出精确残差项：松弛间隙恰好等于变分后验与真实后验之间的 KL 散度。',
-      },
-      {
-        id: 'd-l10-gan',
-        title: String.raw`推导 GAN 最优判别器 $D^*(x)$ 与 Jensen-Shannon 散度等价性（WA4 Q2）`,
-        goal: String.raw`固定生成器分布 $p_g$，求最大化 $V(D, G)$ 的最优判别器 $D^*(x)$，并代回化简为 $\text{JSD}$。`,
-        steps: [
-          {
-            rule: 'Pointwise Calculus Optimization',
-            latex: String.raw`V(D,G) = \int \Big[p_{\text{data}}(x)\log D(x) + p_g(x)\log\big(1-D(x)\big)\Big]dx \implies \frac{d}{dD}\big[a\log D + b\log(1-D)\big] = \frac{a}{D} - \frac{b}{1-D} = 0`,
-            justification: String.raw`对每个 $x$ 逐点求导：令 $f(D) = a\log D + b\log(1-D)$ 导数为 $0$，立刻解得唯一极大值点 $D^* = \frac{a}{a + b}$。`,
-          },
-          {
-            rule: String.raw`Optimal Discriminator $D^*(x)$`,
-            latex: String.raw`D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_g(x)}`,
-            justification: String.raw`当生成分布完美匹配真实分布 $p_g = p_{\text{data}}$ 时，最优判别器处处恒为 $\frac{1}{2}$（彻底无法分辨真假）。`,
-          },
-          {
-            rule: 'Substitute Back to Derive JSD',
-            latex: String.raw`V(D^*, G) = \mathbb{E}_{p_{\text{data}}}\!\left[\log\frac{p_{\text{data}}}{2M}\right] + \mathbb{E}_{p_g}\!\left[\log\frac{p_g}{2M}\right] = -\log 4 + 2\,\text{JSD}(p_{\text{data}}\,\|\,p_g), \quad M = \frac{p_{\text{data}}+p_g}{2}`,
-            justification: String.raw`把分母写成 $2M$ 并拆出 $-\log 2 - \log 2 = -\log 4$，剩余两项恰好是定义式 $D_{\text{KL}}(p_{\text{data}} \| M) + D_{\text{KL}}(p_g \| M) = 2\,\text{JSD}$！`,
-          },
-        ],
-        conclusion: String.raw`因此原始饱和目标 $L_2 = \log(1 - D(G(\mathbf{z})))$ 严格对应最小化 JSD，但初期 $D \approx 0$ 时梯度饱和；工程改用非饱和损失 $L_1 = -\log D(G(\mathbf{z}))$ 换取初期强劲梯度。`,
-      },
-      {
-        id: 'd-l10-ddpm',
-        title: String.raw`推导 DDPM 一步闭式前向加噪公式（跳过中间 $t-1$ 步）`,
-        goal: String.raw`已知单步转移 $\mathbf{x}_t = \sqrt{\alpha_t}\,\mathbf{x}_{t-1} + \sqrt{1-\alpha_t}\,\boldsymbol{\varepsilon}_{t-1}$（$\alpha_t = 1 - \beta_t$），推导直接由 $\mathbf{x}_0$ 采样 $\mathbf{x}_t$ 的闭式公式。`,
-        steps: [
-          {
-            rule: String.raw`Substitute $\mathbf{x}_{t-1}$ Recursively`,
-            latex: String.raw`\mathbf{x}_t = \sqrt{\alpha_t}\Big(\sqrt{\alpha_{t-1}}\mathbf{x}_{t-2} + \sqrt{1-\alpha_{t-1}}\boldsymbol{\epsilon}_{t-2}\Big) + \sqrt{1-\alpha_t}\boldsymbol{\epsilon}_{t-1}`,
-            justification: '把上一步重参数化表达式直接代入。',
-          },
-          {
-            rule: 'Sum of Independent Gaussians',
-            latex: String.raw`\sqrt{\alpha_t(1-\alpha_{t-1})}\,\boldsymbol{\epsilon}_{t-2} + \sqrt{1-\alpha_t}\,\boldsymbol{\epsilon}_{t-1} \sim \mathcal{N}\!\Big(\mathbf{0},\; \big[\alpha_t(1-\alpha_{t-1}) + (1-\alpha_t)\big]\mathbf{I}\Big) = \mathcal{N}\!\big(\mathbf{0},\; (1-\alpha_t\alpha_{t-1})\mathbf{I}\big)`,
-            justification: String.raw`两个独立高斯之和仍为高斯，方差直接相加：$\alpha_t - \alpha_t \alpha_{t-1} + 1 - \alpha_t = 1 - \alpha_t \alpha_{t-1}$，中间项 $\alpha_t$ 精确抵消！`,
-          },
-          {
-            rule: String.raw`Induction to $t = 0$`,
-            latex: String.raw`\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon}, \qquad \bar{\alpha}_t \equiv \prod_{s=1}^t \alpha_s`,
-            justification: String.raw`数学归纳展开至 $t=0$ 即得一步前向公式！因此训练每个 Batch 时只需随机采 $t$ 并一次加噪即可计算 $\|\boldsymbol{\varepsilon} - \boldsymbol{\varepsilon}_\theta(\mathbf{x}_t, t)\|^2$。`,
-          },
-        ],
-        conclusion: String.raw`结合反向单步采样 $\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(\mathbf{x}_t - \frac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}}\boldsymbol{\varepsilon}_\theta(\mathbf{x}_t, t)\right) + \sigma_t \mathbf{z}$ 与 Flow Matching 直线速度场 $\mathbf{x}_t = (1-t)\mathbf{x}_0 + t\mathbf{x}_1$，便打通了整个现代图像生成谱系。`,
-      },
-    ],
-    concepts: [
-      {
-        heading: 'VAE vs GAN vs DDPM vs Flow Matching 横向总览',
-        body: '四类主流生成模型在训练稳定性、似然评估与采样速度上的核心权衡：',
-        table: {
-          headers: ['模型', '核心优化目标', '主要优势', '核心局限'],
-          rows: [
-            ['VAE', String.raw`最大化 $\text{ELBO} = \text{Recon} - \text{KL}$`, '训练极稳、显式平滑潜空间、推理单步', '高斯重建假设导致图像偏模糊'],
-            ['GAN', 'Min-Max 博弈 (JSD / Wasserstein)', '单步生成极其锐利高清', '训练不稳定、易 Mode Collapse、无显式密度'],
-            ['DDPM / LDM', String.raw`MSE 噪声预测 $\|\boldsymbol{\varepsilon} - \boldsymbol{\varepsilon}_\theta\|^2$`, '最高多样性与保真度、训练稳定不崩塌', '反向多步迭代采样慢（需 DDIM / 潜空间加速）'],
-            ['Flow Matching', String.raw`MSE 直线速度场 $\|\mathbf{v}_\theta - (\mathbf{x}_1 - \mathbf{x}_0)\|^2$`, '路径笔直，极少 ODE 步数即可高精度生成', '需高质量速度场架构（如 DiT / SD3 / Flux）'],
-          ],
-        },
-      },
-    ],
-    formulaSpecs: [
-      {
-        id: 'fc-l10-flow',
-        title: 'DDPM 噪声预测 vs Flow Matching 速度场训练步骤',
-        subtitle: '对比两种最前沿扩散/流模型的核心训练代码，几乎同样简洁！',
-        latex: String.raw`\text{Flow Matching: } \htmlClass{formula-token formula-token-output token-xt}{\mathbf{x}_t} = (1-\htmlClass{formula-token formula-token-hyper token-t}{t})\htmlClass{formula-token formula-token-data token-x0}{\mathbf{x}_0} + t\htmlClass{formula-token formula-token-data token-x1}{\mathbf{x}_1}, \quad \htmlClass{formula-token formula-token-loss token-loss}{\mathcal{L}_{\text{FM}}} = \mathbb{E}\!\Big[\big\|\htmlClass{formula-token formula-token-param token-v}{\mathbf{v}_\theta(\mathbf{x}_t, t)} - (\mathbf{x}_1 - \mathbf{x}_0)\big\|^2\Big]`,
-        numpyCode: `def flow_matching_step(x1, vel_net):
-    B = x1.shape[0]
-    t = np.random.uniform(0.0, 1.0, size=(B, 1))
-    x0 = np.random.randn(*x1.shape)                # 纯高斯起点
-    x_t = (1.0 - t) * x0 + t * x1                  # 线性插值态
-    target_v = x1 - x0                             # 直线真速度 dx_t/dt
-    pred_v = vel_net(x_t, t)
-    return np.mean((pred_v - target_v) ** 2)`,
-        pytorchCode: `import torch, torch.nn.functional as F
-
-def flow_matching_loss(model, x1):
-    t = torch.rand(x1.size(0), 1, 1, 1, device=x1.device)
-    x0 = torch.randn_like(x1)
-    x_t = (1.0 - t) * x0 + t * x1
-    target_v = x1 - x0
-    return F.mse_loss(model(x_t, t.squeeze()), target_v)`,
-        terms: [
-          { id: 't', label: String.raw`$t \sim \mathcal{U}(0, 1)$`, role: 'hyper', shape: '(B, 1)', explanation: '均匀采样的连续演进时刻。', numpyLines: [3], pytorchLines: [4] },
-          { id: 'x0', label: String.raw`噪声起点 $\mathbf{x}_0 \sim p_0$`, role: 'data', shape: '(B, C, H, W)', explanation: '简单先验分布标准高斯采样。', numpyLines: [4], pytorchLines: [5] },
-          { id: 'x1', label: String.raw`目标样本 $\mathbf{x}_1 \sim p_1$`, role: 'data', shape: '(B, C, H, W)', explanation: '真实数据分布样本。', numpyLines: [5, 6], pytorchLines: [6, 7] },
-          { id: 'xt', label: String.raw`插值状态 $\mathbf{x}_t$`, role: 'output', shape: '(B, C, H, W)', explanation: '连接噪声与数据的直线上中间点。', numpyLines: [5], pytorchLines: [6] },
-          { id: 'v', label: String.raw`速度场网络 $\mathbf{v}_\theta(\mathbf{x}_t, t)$`, role: 'param', shape: '(B, C, H, W)', explanation: '学习边际概率流的瞬时速度方向。', numpyLines: [7], pytorchLines: [8] },
-          { id: 'loss', label: '条件速度 MSE 损失', role: 'loss', shape: 'scalar', explanation: String.raw`推理时从 $t=0$ 到 $t=1$ 做少量 Euler 步 $\mathbf{x} \leftarrow \mathbf{x} + \Delta t \cdot \mathbf{v}_\theta$ 即可生成样本。`, numpyLines: [6, 8], pytorchLines: [7, 8] },
-        ],
-      },
-    ],
-    pitfalls: [
-      {
-        title: String.raw`DDPM 反向采样最后一步 ($t = 1 \to 0$) 不加随机噪声 $\sigma_t \mathbf{z}$`,
-        detail: String.raw`在 $t > 1$ 的中间去噪步加入 $\sigma_t \mathbf{z}$ 维持采样多样性；但最后一步输出最终图像 $\mathbf{x}_0$ 时令 $\mathbf{z} = \mathbf{0}$，避免把额外高斯噪点直接印在成图表面。`,
-      },
-    ],
-  },
-  {
-    id: 'l11',
-    code: 'L11',
-    partGroup: 'Part III · Transformers, Generative Models & RL',
-    slug: 'l11-reinforcement-learning',
-    titleZh: '强化学习：MDP、Q-Learning / DQN、Policy Gradient 与 PPO',
-    titleEn: 'MDP, Bellman Equations, DQN, Policy Gradient, A2C & PPO/RLHF',
-    abstract:
-      '系统打通值函数与策略梯度两大强化学习范式：从 Bellman 期望/最优方程到 Model-Free 时序差分（On-Policy SARSA vs Off-Policy Q-Learning）与 DQN 稳定性技巧；严格证明 Policy Gradient Theorem（Log-Derivative Trick 消去未知环境动力学）以及 Baseline 无偏降方差原理，直至驱动现代 RLHF 的 PPO 裁剪目标。',
-    readingChecklist: [
-      String.raw`MDP 五元组 $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$、折扣回报 $G_t$、$V^\pi(s)$ 与 $Q^\pi(s, a)$`,
-      'Bellman 期望方程 vs Bellman 最优方程；Policy Iteration vs Value Iteration',
-      'Model-Free TD 更新：SARSA (On-Policy) vs Q-Learning (Off-Policy)',
-      'DQN 两大支柱（Experience Replay + Target Network）与 Double / Dueling DQN',
-      'Policy Gradient Theorem 推导（Log-Derivative Trick）与 Baseline 无偏降方差证明',
-      'Advantage Actor-Critic (A2C)、PPO Clipped Surrogate Objective 与 RLHF / DPO',
-    ],
-    verifierId: 'l11-rl-bellman-ppo',
-    derivations: [
-      {
-        id: 'd-l11-pg',
-        title: String.raw`零跳步证明 Policy Gradient Theorem（为何无需知道环境转移模型 $P$？）`,
-        goal: String.raw`最大化轨迹期望回报 $J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$，利用 Log-Derivative Trick 导出完全 Model-Free 的梯度估计公式，并证明减去状态 Baseline $b(s)$ 严格保持无偏。`,
-        steps: [
-          {
-            rule: 'Log-Derivative Trick',
-            latex: String.raw`\nabla_\theta J(\theta) = \int R(\tau)\,\nabla_\theta p_\theta(\tau)\,d\tau = \int R(\tau)\,p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\,d\tau = \mathbb{E}_{\tau\sim\pi_\theta}\!\big[R(\tau)\,\nabla_\theta \log p_\theta(\tau)\big]`,
-            justification: String.raw`利用恒等式 $\nabla p = p \cdot \nabla \log p$，把求导从概率密度里“搬到”对数内部，从而重新变成关于 $p_\theta(\tau)$ 的期望（可直接用采样轨迹的蒙特卡洛均值估计！）。`,
-          },
-          {
-            rule: String.raw`Trajectory Factorization Eliminates Environment $P$`,
-            latex: String.raw`\log p_\theta(\tau) = \underbrace{\log \mu_0(s_0) + \sum_{t=0}^{T-1} \log P(s_{t+1}\mid s_t, a_t)}_{\text{不含 }\theta \implies \nabla_\theta = 0} + \sum_{t=0}^{T-1} \log \pi_\theta(a_t \mid s_t)`,
-            justification: String.raw`最惊艳的一步：初始分布 $\mu_0$ 和环境动力学 $P(s' \mid s, a)$ 全与策略参数 $\theta$ 无关！取梯度后全部归零，因此 Policy Gradient 彻底摆脱了对环境模型的依赖！`,
-          },
-          {
-            rule: String.raw`Unbiasedness of State-Dependent Baseline $b(s)$`,
-            latex: String.raw`\mathbb{E}_{a\sim \pi_\theta}\!\big[b(s)\,\nabla_\theta \log \pi_\theta(a|s)\big] = b(s)\sum_a \pi_\theta(a|s)\frac{\nabla_\theta \pi_\theta(a|s)}{\pi_\theta(a|s)} = b(s)\,\nabla_\theta \underbrace{\sum_a \pi_\theta(a|s)}_{=\,1} = 0`,
-            justification: String.raw`只要 Baseline $b(s)$ 不依赖动作 $a$，它乘以策略得分函数的期望严格等于 $0$！因此用优势函数 $\hat{A}_t = Q(s, a) - V(s)$ 替换总回报 $R$ 绝不引入偏差，却能大幅削减采样方差！`,
-          },
-        ],
-        conclusion: '这三步直接奠定了 REINFORCE、A2C、PPO 以及大模型 RLHF 对齐的完整理论基石。',
-      },
-    ],
-    concepts: [
-      {
-        heading: 'RL 算法演进全景谱系（核心算法横向对照）',
-        body: '理解每个算法究竟是在解决前一代算法的哪一个痛点：',
-        table: {
-          headers: ['算法', '类别', '核心机制', '解决的痛点'],
-          rows: [
-            ['Value Iteration', 'Model-Based DP', String.raw`已知 $P, R$，同步迭代 Bellman 最优方程`, '小规模已知环境的精确最优求解'],
-            ['Q-Learning', 'Model-Free Off-Policy', String.raw`$\text{TD Target} = r + \gamma \max_{a'} Q(s', a')$`, '摆脱环境模型依赖，可离线复用探索数据'],
-            ['DQN', 'Value-Based Deep RL', String.raw`神经网络 $Q_\theta$ + Replay Buffer + Target Net`, '突破表格维度灾难，打破样本自相关与目标漂移'],
-            ['REINFORCE / A2C', 'Policy / Actor-Critic', String.raw`$\nabla \log \pi_\theta \cdot \hat{A}_t$（Critic 估值降方差）`, '支持连续动作空间与随机策略，显著降低 MC 方差'],
-            ['PPO / RLHF', 'Trust-Region Policy', String.raw`$\min\!\big(r_t \hat{A}_t,\, \operatorname{clip}(r_t, 1\pm\epsilon)\hat{A}_t\big) + \text{KL}$ 惩罚`, '防止单步更新过大拉崩策略，实现稳定 LLM 对齐'],
-          ],
-        },
-      },
-    ],
-    formulaSpecs: [
-      {
-        id: 'fc-l11-ppo',
-        title: 'PPO Clipped Surrogate Objective + 价值函数损失',
-        subtitle: '对应 HA12 核心：重要性采样比、悲观下界裁剪与优势函数',
-        latex: String.raw`\htmlClass{formula-token formula-token-loss token-obj}{L^{\text{CLIP}}(\theta)} = \mathbb{E}_t\Big[\min\big(\htmlClass{formula-token formula-token-output token-r}{r_t(\theta)}\,\htmlClass{formula-token formula-token-data token-a}{\hat{A}_t},\; \htmlClass{formula-token formula-token-hyper token-c}{\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)}\,\hat{A}_t\big)\Big]`,
-        numpyCode: `def ppo_clip_loss(logp_new, logp_old, adv, eps=0.2):
-    # 对数差取指数算概率比 r_t = pi_new / pi_old，数值最稳定
-    ratio = np.exp(logp_new - logp_old)
-    surr1 = ratio * adv
-    surr2 = np.clip(ratio, 1.0 - eps, 1.0 + eps) * adv
-    # 优化器做梯度下降，因此对需要最大化的目标取负号
-    return -np.mean(np.minimum(surr1, surr2))`,
-        pytorchCode: `import torch
-
-def ppo_clip_loss_torch(logp_new, logp_old, adv, eps=0.2):
-    ratio = (logp_new - logp_old).exp()
-    surr1 = ratio * adv
-    surr2 = torch.clamp(ratio, 1.0 - eps, 1.0 + eps) * adv
-    return -torch.min(surr1, surr2).mean()`,
-        terms: [
-          { id: 'r', label: String.raw`概率比 $r_t(\theta)$`, role: 'output', shape: '(B,)', explanation: '衡量新策略相对旧采样策略在该动作上的概率变化倍数。', numpyLines: [3], pytorchLines: [4] },
-          { id: 'a', label: String.raw`优势估计 $\hat{A}_t$`, role: 'data', shape: '(B,)', explanation: '常用 GAE 计算并做 batch 标准化，正值鼓励该动作，负值抑制该动作。', numpyLines: [4, 5], pytorchLines: [5, 6] },
-          { id: 'c', label: String.raw`裁剪信赖域 $[1-\epsilon, 1+\epsilon]$`, role: 'hyper', shape: 'ε ≈ 0.2', explanation: String.raw`禁止新策略在单轮更新中偏离旧策略超过 $\pm 20\%$。`, numpyLines: [5], pytorchLines: [6] },
-          { id: 'obj', label: '悲观下界目标', role: 'loss', shape: 'scalar', explanation: String.raw`取 $\min$ 保证仅截断过度激进的同向激励，而把好动作改差时仍保留纠偏梯度。`, numpyLines: [7], pytorchLines: [7] },
-        ],
-      },
-    ],
-    pitfalls: [
-      {
-        title: 'DQN 中忘记对 TD Target 使用 `torch.no_grad()`',
-        detail: String.raw`在计算 $\text{loss} = \text{SmoothL1}\!\big(Q_{\text{online}}(s, a),\; r + \gamma \max_{a'} Q_{\text{target}}(s', a')\big)$ 时，TD Target 必须被视为固定回归标签（` + '`no_grad`' + ' / ' + '`detach`' + String.raw`），否则反向传播会同时把目标网往在线网方向拉，破坏 Bellman 迭代动力学！`,
-      },
-    ],
-    sandbox: {
-      id: 'sb-l11',
-      title: 'Pyodide 实测：Cliff Walking 中 SARSA vs Q-Learning 训练回报定量对比',
-      description: String.raw`运行真实 $4 \times 12$ 悬崖行走环境，定量比较 On-Policy SARSA 与 Off-Policy Q-Learning 在训练期的回报曲线。`,
-      starterCode: `import numpy as np
-
-rng = np.random.default_rng(7)
-ROWS, COLS = 4, 12
-DIRS = [(-1,0), (0,1), (1,0), (0,-1)]
-
-def step(r, c, a):
-    nr = max(0, min(ROWS-1, r + DIRS[a][0]))
-    nc = max(0, min(COLS-1, c + DIRS[a][1]))
-    if nr == 3 and 1 <= nc <= 10:
-        return 3, 0, -100.0, False
-    if nr == 3 and nc == 11:
-        return nr, nc, -1.0, True
-    return nr, nc, -1.0, False
-
-def choose(q, eps):
-    return int(rng.integers(4)) if rng.random() < eps else int(np.argmax(q))
-
-def run(algo, episodes=300, eps=0.1, alpha=0.5, gamma=1.0):
-    Q = np.zeros((ROWS, COLS, 4))
-    rets = []
-    for _ in range(episodes):
-        r, c, total = 3, 0, 0.0
-        a = choose(Q[r, c], eps)
-        for _ in range(200):
-            nr, nc, rew, done = step(r, c, a)
-            total += rew
-            na = choose(Q[nr, nc], eps)
-            target = rew + (0.0 if done else gamma * (Q[nr, nc, na] if algo == "sarsa" else np.max(Q[nr, nc])))
-            Q[r, c, a] += alpha * (target - Q[r, c, a])
-            r, c, a = nr, nc, na
-            if done:
-                break
-        rets.append(total)
-    # 20-episode moving average
-    return np.convolve(rets, np.ones(20)/20, mode="valid")
-
-sarsa_avg = run("sarsa")
-qlearn_avg = run("qlearn")
-print(f"最后 50 轮平均训练回报 -> SARSA (安全路线): {sarsa_avg[-50:].mean():.1f} | Q-Learning (贴崖路线): {qlearn_avg[-50:].mean():.1f}")
-plot_series(
-    "Cliff Walking (ε=0.1) 训练期 20-Episode 滑动平均回报",
-    {"SARSA (On-Policy · 更稳)": sarsa_avg, "Q-Learning (Off-Policy · 偶发掉崖)": qlearn_avg},
-    xlabel="Episode",
-    ylabel="Avg Return"
-)
-`,
-    },
   },
 ];

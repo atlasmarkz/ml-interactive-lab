@@ -4,8 +4,10 @@ export const LECTURES_PART_2: LectureModule[] = [
   {
     id: 'l04',
     code: 'L04',
-    partGroup: 'Part II · Deep Learning Foundations',
+    partGroup: 'Part 2 · Foundations of Deep Learning',
     slug: 'l04-fnn-backprop',
+    slides: ['l04.pdf', 'l04-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '前馈神经网络、激活函数与反向传播 (FNN & Backprop)',
     titleEn: 'Feedforward Neural Networks, Activations & Backpropagation',
     abstract: String.raw`从万能逼近定理与现代激活函数演进（Sigmoid → ReLU → GELU / SwiGLU）出发，以矩阵微积分严密推导多层网络的反向传播递归公式 $\boldsymbol{\delta}^{(l)}$，并掌握概率输出头设计与数值梯度检查（Gradient Checking）。`,
@@ -163,8 +165,10 @@ for name in ["W1", "b1", "W2", "b2"]:
   {
     id: 'l05',
     code: 'L05',
-    partGroup: 'Part II · Deep Learning Foundations',
+    partGroup: 'Part 2 · Foundations of Deep Learning',
     slug: 'l05-optimization-norm-dropout',
+    slides: ['l05.pdf', 'l05-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '深度学习核心机制：Dropout、自适应优化器与归一化',
     titleEn: 'Dropout, Adaptive Optimizers (Adam/AdamW) & Normalization',
     abstract:
@@ -254,8 +258,10 @@ optimizer.step()`,
   {
     id: 'l06',
     code: 'L06',
-    partGroup: 'Part II · Deep Learning Foundations',
+    partGroup: 'Part 2 · Foundations of Deep Learning',
     slug: 'l06-cnn-resnet',
+    slides: ['l06.pdf', 'l06-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '卷积神经网络、感受野与残差架构演进 (CNN & ResNet)',
     titleEn: 'Convolutional Neural Networks, Inception, ResNet & DenseNet',
     abstract: String.raw`从视觉皮层的局部感受野与平移等变性出发，精确掌握多通道卷积的张量尺寸、参数量与 FLOPs 手算规律、$1 \times 1$ 卷积瓶颈降维的算力经济学，以及 ResNet 恒等跳连如何从梯度恒等项彻底击破深层网络退化问题。`,
@@ -347,8 +353,10 @@ class ResidualBlock(nn.Module):
   {
     id: 'l07',
     code: 'L07',
-    partGroup: 'Part II · Deep Learning Foundations',
+    partGroup: 'Part 2 · Foundations of Deep Learning',
     slug: 'l07-rnn-lstm-attention',
+    slides: ['l07.pdf', 'l07-postclass.pdf'],
+    examWeight: 'core',
     titleZh: '循环神经网络、LSTM/GRU、Seq2Seq 与注意力起源',
     titleEn: 'RNN, LSTM/GRU, Encoder-Decoder Seq2Seq & Attention',
     abstract:
