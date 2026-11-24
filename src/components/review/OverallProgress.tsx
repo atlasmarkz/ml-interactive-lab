@@ -55,7 +55,7 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean; 
           已掌握 {s.counts.mastered}/{total} 讲 · 到期卡片 {s.due}
         </div>
         <Link to="/review" className="inline-block text-[13px] text-blue-700 hover:underline dark:text-blue-400">
-          打开复习中心 →
+          打开学习中心 →
         </Link>
       </div>
     );
@@ -180,7 +180,7 @@ export const OverallProgress: React.FC<{ currentId?: string; compact?: boolean; 
       )}
 
       <Link to="/review" className="inline-flex items-center gap-1 text-[13px] text-blue-700 hover:underline dark:text-blue-400">
-        打开复习中心 <ArrowRight className="h-3.5 w-3.5" />
+        打开学习中心 <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   );

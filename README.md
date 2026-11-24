@@ -1,4 +1,4 @@
-# ML Review Companion — 机器学习复习手册
+# ML Review Companion — 机器学习学习手册
 
 > **Live Site:** https://ml-interactive-lab.vercel.app
 
@@ -11,7 +11,7 @@
 | 入口 | 作用 |
 | --- | --- |
 | **逐讲页面** `/lecture/:slug` | 考点速记 → 必记公式（可遮挡默写）→ **交互探索** → 推导链 → 图解 → 数值验算器 → 概念对比 → 公式↔代码 → 易错点 → Python 实测 → 本讲抽认卡与练习题。顶部可勾选「知识点自查表」并标记本讲掌握程度。 |
-| **复习中心** `/review` | 今日到期卡片、练习正确率、错题数、连续复习天数；按 Part 列出每讲的自查 / 卡片 / 练习进度；根据错题与到期卡片推荐优先复习的讲次。 |
+| **学习中心** `/review` | 今日到期卡片、练习正确率、错题数、连续复习天数；按 Part 列出每讲的自查 / 卡片 / 练习进度；根据错题与到期卡片推荐优先复习的讲次。 |
 | **抽认卡** `/review/flashcards` | 间隔重复（SM-2 变体）：空格翻面，1–4 评分（忘了 / 模糊 / 记得 / 很熟）；可按讲次或整个 Part 过滤。 |
 | **练习与错题** `/review/quiz` | 随机抽题、按讲全部、错题本三种模式；可按 WA 题型筛选（如 `?style=WA3 Q5`，作业对照页每题旁有「练这类题」入口）；选择题自动判分，计算 / 简答题对照参考答案自评，答错自动进入错题本。 |
 | **公式速查** `/review/formulas` | 全部核心公式按讲次汇总，可搜索、遮挡默写、打印。 |
@@ -63,7 +63,7 @@ src/
 │   └── DerivationChain · FormulaCodeSync · PythonSandbox · RichText …
 ├── pages/
 │   ├── HomePage.tsx · ModulePage.tsx
-│   └── review/                     # 复习中心、抽认卡、练习、公式速查、作业对照
+│   └── review/                     # 学习中心、抽认卡、练习、公式速查、作业对照
 scripts/check-content.ts            # 内容校验：KaTeX 全量渲染、ID 唯一、选择题答案、引用完整性
 ```
 

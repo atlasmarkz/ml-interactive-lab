@@ -94,7 +94,7 @@ export const ReviewHubPage: React.FC = () => {
     <div className="space-y-8 pb-12">
       <PageHeader
         kicker="Review Hub"
-        title="复习中心"
+        title="学习中心"
         description="把 L00–L16 的讲义内容变成可以反复练的东西：抽认卡做间隔重复，原创练习题查漏，公式速查表做主动回忆，作业对照表帮你按 WA 题型定位讲次。所有进度只保存在这个浏览器里。"
       />
 

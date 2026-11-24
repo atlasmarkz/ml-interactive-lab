@@ -395,7 +395,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
                       to={`/review/flashcards?l=${lec.id}`}
                       className="rounded-lg border border-stone-300 px-3.5 py-1.5 text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                     >
-                      在复习中心打开
+                      在学习中心打开
                     </Link>
                   </div>
                 </div>
@@ -438,7 +438,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
           ) : (
             <Link to="/review" className="group rounded-xl border border-stone-200 bg-white p-4 text-right transition hover:border-blue-500 dark:border-zinc-800 dark:bg-[#11151d]">
               <div className="text-[13px] text-stone-500 dark:text-zinc-400">全部讲次已读完</div>
-              <div className="mt-1 text-[15px] font-semibold text-stone-900 group-hover:text-blue-700 dark:text-zinc-100">前往复习中心 →</div>
+              <div className="mt-1 text-[15px] font-semibold text-stone-900 group-hover:text-blue-700 dark:text-zinc-100">前往学习中心 →</div>
             </Link>
           )}
         </nav>

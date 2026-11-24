@@ -32,7 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
         <BookOpen className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
         <div>
           <div className="font-serif-display text-base font-semibold tracking-tight text-stone-900 dark:text-zinc-100 leading-tight">
-            机器学习复习手册
+            机器学习学习手册
           </div>
           <div className="font-mono text-[11px] text-stone-500 dark:text-zinc-500">
             ML Review Companion · L00–L16
@@ -59,7 +59,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
         <div className="space-y-0.5">
           <div className="flex items-center gap-1.5 px-3 pb-1 text-[11px] font-mono font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400">
             <GraduationCap className="h-3 w-3" />
-            复习中心 (Review)
+            学习中心 (Learn)
           </div>
           {REVIEW_NAV.map((n) => {
             const active = location.pathname === n.to;
