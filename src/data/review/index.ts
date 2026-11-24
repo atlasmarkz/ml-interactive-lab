@@ -4,6 +4,7 @@ import { REVIEW_PART_2 } from './part2';
 import { REVIEW_PART_3 } from './part3';
 import { REVIEW_PART_45 } from './part45';
 import { REVIEW_PART_5 } from './part5';
+import { EXTRA_QUIZ } from './extraQuiz';
 
 export const REVIEW_PACKS: ReviewPack[] = [
   ...REVIEW_PART_01,
@@ -11,7 +12,7 @@ export const REVIEW_PACKS: ReviewPack[] = [
   ...REVIEW_PART_3,
   ...REVIEW_PART_45,
   ...REVIEW_PART_5,
-];
+].map((p) => ({ ...p, quiz: [...p.quiz, ...(EXTRA_QUIZ[p.lectureId] ?? [])] }));
 
 const BY_LECTURE = new Map(REVIEW_PACKS.map((p) => [p.lectureId, p]));
 

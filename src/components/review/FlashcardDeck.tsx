@@ -93,7 +93,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ cards, emptyHint, 
               setQueue(cards);
               setDone(0);
             }}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-stone-300 px-3 py-1.5 text-xs text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-stone-300 px-3 py-1.5 text-[13px] text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             再过一遍
@@ -108,7 +108,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ cards, emptyHint, 
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-3 font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+      <div className="flex items-center justify-between gap-3 font-mono text-[12px] text-stone-500 dark:text-zinc-400">
         <span>
           已完成 {done} / {total} · 队列剩余 {queue.length}
         </span>
@@ -125,20 +125,20 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ cards, emptyHint, 
       >
         <div className="flex items-center justify-between gap-2">
           <LectureTag lectureId={current.lectureId} link={false} />
-          <span className="font-mono text-[10.5px] uppercase tracking-wider text-stone-400">
+          <span className="font-mono text-[11.5px] uppercase tracking-wider text-stone-400">
             {flipped ? 'Answer' : 'Question'}
             {prev ? ` · 已复习 ${prev.reps} 次` : ' · 新卡片'}
           </span>
         </div>
-        <div className="mt-4 text-[15px] font-medium leading-relaxed text-stone-900 dark:text-zinc-100 math-prose">
+        <div className="mt-4 text-[17px] font-medium leading-relaxed text-stone-900 dark:text-zinc-100 math-prose">
           <RichText text={current.front} />
         </div>
         {flipped ? (
-          <div className="mt-4 border-t border-stone-200 pt-4 text-[14px] leading-[1.85] text-stone-700 dark:border-zinc-800 dark:text-zinc-300 math-prose">
+          <div className="mt-4 border-t border-stone-200 pt-4 text-[16px] leading-[1.85] text-stone-700 dark:border-zinc-800 dark:text-zinc-300 math-prose">
             <RichText text={current.back} />
           </div>
         ) : (
-          <div className="mt-6 text-xs text-stone-400 dark:text-zinc-500">先自己回答，再点击或按空格查看答案</div>
+          <div className="mt-6 text-[13px] text-stone-400 dark:text-zinc-500">先自己回答，再点击或按空格查看答案</div>
         )}
       </button>
 
@@ -152,9 +152,9 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ cards, emptyHint, 
             >
               <div className="flex items-center justify-between font-medium">
                 <span>{r.label}</span>
-                <kbd className="font-mono text-[10px] opacity-60">{r.key}</kbd>
+                <kbd className="font-mono text-[11px] opacity-60">{r.key}</kbd>
               </div>
-              <div className="mt-0.5 font-mono text-[10.5px] opacity-70">{fmtInterval(schedule(prev, r.rating).interval)}</div>
+              <div className="mt-0.5 font-mono text-[11.5px] opacity-70">{fmtInterval(schedule(prev, r.rating).interval)}</div>
             </button>
           ))}
         </div>

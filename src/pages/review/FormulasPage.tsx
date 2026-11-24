@@ -44,17 +44,17 @@ export const FormulasPage: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="搜索：KL、Adam、DDPM、L12…"
-              className="w-60 rounded-md border border-stone-200 bg-white py-1 pl-7 pr-2 text-xs focus:border-blue-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900"
+              className="w-60 rounded-md border border-stone-200 bg-white py-1 pl-7 pr-2 text-[13px] focus:border-blue-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900"
             />
           </label>
           <HideToggle hidden={hidden} onToggle={() => setHidden((h) => !h)} />
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-600 hover:border-blue-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-[13px] text-stone-600 hover:border-blue-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 cursor-pointer"
           >
             <Printer className="h-3.5 w-3.5" /> 打印
           </button>
-          <span className="font-mono text-[11px] text-stone-500 dark:text-zinc-400">{total} 条公式</span>
+          <span className="font-mono text-[12px] text-stone-500 dark:text-zinc-400">{total} 条公式</span>
         </div>
       </PageHeader>
 
@@ -63,14 +63,14 @@ export const FormulasPage: React.FC = () => {
         if (items.length === 0) return null;
         return (
           <section key={group} className="space-y-3">
-            <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400 border-b border-stone-200 pb-2 dark:border-zinc-800">
+            <h2 className="font-mono text-[13px] font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400 border-b border-stone-200 pb-2 dark:border-zinc-800">
               {group}
             </h2>
             {items.map(({ lec, formulas }) => (
               <div key={lec.id} className="rounded-lg border border-stone-200 bg-white px-4 py-2 dark:border-zinc-800 dark:bg-[#11151d] break-inside-avoid">
                 <Link to={`/lecture/${lec.slug}`} className="flex items-baseline gap-2 py-1.5 hover:text-blue-700 dark:hover:text-blue-400">
-                  <span className="font-mono text-xs font-bold text-blue-700 dark:text-blue-400">{lec.code}</span>
-                  <span className="text-[13px] font-semibold text-stone-900 dark:text-zinc-100">{lec.titleZh}</span>
+                  <span className="font-mono text-[13px] font-bold text-blue-700 dark:text-blue-400">{lec.code}</span>
+                  <span className="text-[15px] font-semibold text-stone-900 dark:text-zinc-100">{lec.titleZh}</span>
                 </Link>
                 {formulas.map((f, i) => (
                   <FormulaRow key={`${lec.id}-${i}-${hidden}`} formula={f} hidden={hidden} />

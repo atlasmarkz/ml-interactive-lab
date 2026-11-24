@@ -9,6 +9,8 @@ import { QuizPage } from './pages/review/QuizPage';
 import { FormulasPage } from './pages/review/FormulasPage';
 import { AssignmentsPage } from './pages/review/AssignmentsPage';
 
+const Narrow: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="mx-auto max-w-4xl">{children}</div>;
+
 export const App: React.FC = () => {
   const [isDark, setIsDark] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -30,13 +32,13 @@ export const App: React.FC = () => {
     <BrowserRouter>
       <Layout isDark={isDark} onToggleDark={() => setIsDark((d) => !d)}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Narrow><HomePage /></Narrow>} />
           <Route path="/lecture/:slug" element={<ModulePage isDark={isDark} />} />
-          <Route path="/review" element={<ReviewHubPage />} />
-          <Route path="/review/flashcards" element={<FlashcardsPage />} />
-          <Route path="/review/quiz" element={<QuizPage />} />
-          <Route path="/review/formulas" element={<FormulasPage />} />
-          <Route path="/review/assignments" element={<AssignmentsPage />} />
+          <Route path="/review" element={<Narrow><ReviewHubPage /></Narrow>} />
+          <Route path="/review/flashcards" element={<Narrow><FlashcardsPage /></Narrow>} />
+          <Route path="/review/quiz" element={<Narrow><QuizPage /></Narrow>} />
+          <Route path="/review/formulas" element={<Narrow><FormulasPage /></Narrow>} />
+          <Route path="/review/assignments" element={<Narrow><AssignmentsPage /></Narrow>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

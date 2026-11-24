@@ -95,7 +95,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
           <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
             <RichText text={spec.title} />
           </h3>
-          <p className="mt-0.5 text-[12.5px] leading-relaxed text-stone-500 dark:text-zinc-400">
+          <p className="mt-0.5 text-[14px] leading-relaxed text-stone-500 dark:text-zinc-400">
             <RichText text={spec.subtitle} />
           </p>
         </div>
@@ -105,7 +105,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
             <button onClick={handlePrev} className="rounded p-1 text-stone-600 hover:bg-stone-100 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer">
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
-            <span className="px-2 font-mono text-[11px] text-stone-600 dark:text-zinc-300">
+            <span className="px-2 font-mono text-[12px] text-stone-600 dark:text-zinc-300">
               {stepIndex >= 0 ? `${stepIndex + 1}/${spec.terms.length}` : `0/${spec.terms.length}`}
             </span>
             <button onClick={handleNext} className="rounded p-1 text-stone-600 hover:bg-stone-100 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer">
@@ -114,7 +114,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
           </div>
 
           {spec.pytorchCode && (
-            <div className="flex rounded-md border border-stone-200 bg-white p-0.5 text-xs font-medium dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="flex rounded-md border border-stone-200 bg-white p-0.5 text-[13px] font-medium dark:border-zinc-700 dark:bg-zinc-900">
               <button
                 onClick={() => setFramework('numpy')}
                 className={`rounded px-2.5 py-0.5 transition cursor-pointer ${
@@ -143,7 +143,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-stone-200 dark:divide-zinc-800">
         <div className="lg:col-span-6 p-5 flex flex-col justify-between gap-4">
           <div>
-            <div className="mb-2 flex items-center justify-between text-[11px] text-stone-400">
+            <div className="mb-2 flex items-center justify-between text-[12px] text-stone-400">
               <span className="font-mono uppercase tracking-wider">Formula → Code Sync</span>
               <button
                 onClick={() => setSelectedId(null)}
@@ -173,7 +173,7 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
                     onMouseEnter={() => setHoveredId(term.id)}
                     onMouseLeave={() => setHoveredId(null)}
                     onClick={() => setSelectedId(term.id)}
-                    className={`inline-flex items-center gap-1.5 rounded border px-2 py-0.5 text-[11px] font-medium transition cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 rounded border px-2 py-0.5 text-[12px] font-medium transition cursor-pointer ${
                       style.badge
                     } ${isActive ? 'ring-1 ring-blue-600' : 'opacity-85 hover:opacity-100'}`}
                   >
@@ -190,14 +190,14 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
               className={`rounded-md border border-stone-200 border-l-3 bg-stone-50/80 p-3.5 dark:border-zinc-800 dark:bg-zinc-950/60 ${ROLE_STYLES[activeTerm.role].border}`}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[13px] font-semibold text-stone-900 dark:text-zinc-100">
+                <span className="text-[15px] font-semibold text-stone-900 dark:text-zinc-100">
                   <RichText text={activeTerm.label} />
                 </span>
-                <span className="inline-flex items-center gap-1 rounded bg-stone-200/70 px-1.5 py-0.5 font-mono text-[10.5px] text-stone-700 dark:bg-zinc-800 dark:text-zinc-300">
+                <span className="inline-flex items-center gap-1 rounded bg-stone-200/70 px-1.5 py-0.5 font-mono text-[11.5px] text-stone-700 dark:bg-zinc-800 dark:text-zinc-300">
                   <Layers className="h-3 w-3" /> {activeTerm.shape}
                 </span>
               </div>
-              <p className="mt-1.5 text-[13px] math-prose text-stone-600 dark:text-zinc-300">
+              <p className="mt-1.5 text-[15px] math-prose text-stone-600 dark:text-zinc-300">
                 <RichText text={activeTerm.explanation} />
               </p>
             </div>
@@ -205,14 +205,14 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
         </div>
 
         <div className="lg:col-span-6 bg-[#0d1117] text-zinc-100 flex flex-col">
-          <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 text-[11px] text-zinc-400">
+          <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 text-[12px] text-zinc-400">
             <span className="inline-flex items-center gap-1.5 font-mono">
               <Code2 className="h-3.5 w-3.5 text-emerald-400" />
               {framework === 'pytorch' ? 'pytorch_reference.py' : 'numpy_reference.py'}
             </span>
             <span>悬停代码行高亮对应符号</span>
           </div>
-          <div className="overflow-x-auto py-3 font-mono text-xs leading-6 flex-1">
+          <div className="overflow-x-auto py-3 font-mono text-[13px] leading-6 flex-1">
             {codeLines.map((line, idx) => {
               const lineNum = idx + 1;
               const isHighlighted = activeLines.has(lineNum);

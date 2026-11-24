@@ -10,7 +10,7 @@ const PILLARS = [
   { tag: '01 · KEY POINTS', title: '考点速记与公式默写', body: '每讲 4–7 条必记结论和核心公式，可遮挡公式做主动回忆。' },
   { tag: '02 · FLASHCARDS', title: '间隔重复抽认卡', body: '按「忘了 / 模糊 / 记得 / 很熟」评分，自动安排下次复习。' },
   { tag: '03 · PRACTICE', title: 'WA 题型原创练习与错题本', body: '计算题换数字重做，简答题对照要点自评，答错自动收录。' },
-  { tag: '04 · DEEP DIVE', title: '推导链、验算器与代码', body: '零跳步推导、可编辑数值验算器、公式↔代码映射与浏览器内 Python。' },
+  { tag: '04 · EXPLORE', title: '交互探索与深度推导', body: '22 个可拖动的交互组件，配合零跳步推导、数值验算器与浏览器内 Python。' },
 ];
 
 const WEIGHT = { core: '核心', support: '基础', optional: '选读' } as const;
@@ -23,7 +23,7 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-12 pb-12">
       <header className="border-b border-stone-200 pb-8 dark:border-zinc-800 space-y-4">
-        <div className="font-mono text-xs font-medium uppercase tracking-widest text-blue-700 dark:text-blue-400">
+        <div className="font-mono text-[13px] font-medium uppercase tracking-widest text-blue-700 dark:text-blue-400">
           Machine Learning · Interactive Review Companion
         </div>
         <h1 className="font-serif-display text-3xl sm:text-5xl font-semibold tracking-tight text-stone-950 dark:text-zinc-50 leading-tight">
@@ -47,15 +47,15 @@ export const HomePage: React.FC = () => {
           >
             今日卡片（{due}）
           </Link>
-          <span className="font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+          <span className="font-mono text-[12px] text-stone-500 dark:text-zinc-400">
             已掌握 {mastered}/{LECTURES.length} 讲 · {ALL_CARDS.length} 张卡片 · {ALL_QUESTIONS.length} 道练习
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-3 text-[13px]">
           {PILLARS.map((p) => (
             <div key={p.tag} className="rounded-lg border border-stone-200 bg-white p-3.5 dark:border-zinc-800 dark:bg-[#11151d]">
-              <div className="font-mono text-[10.5px] font-semibold text-blue-700 dark:text-blue-400">{p.tag}</div>
+              <div className="font-mono text-[11.5px] font-semibold text-blue-700 dark:text-blue-400">{p.tag}</div>
               <div className="mt-1 font-semibold text-stone-900 dark:text-zinc-100">{p.title}</div>
               <p className="mt-1 leading-relaxed text-stone-600 dark:text-zinc-400">{p.body}</p>
             </div>
@@ -68,7 +68,7 @@ export const HomePage: React.FC = () => {
           const items = LECTURES.filter((l) => l.partGroup === group);
           return (
             <div key={group} className="space-y-3">
-              <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400 border-b border-stone-200 pb-2 dark:border-zinc-800">
+              <h2 className="font-mono text-[13px] font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400 border-b border-stone-200 pb-2 dark:border-zinc-800">
                 {group}
               </h2>
               <div className="divide-y divide-stone-200 rounded-lg border border-stone-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-[#11151d]">
@@ -82,7 +82,7 @@ export const HomePage: React.FC = () => {
                     >
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-baseline gap-3">
-                          <span className="flex w-14 shrink-0 items-center gap-1.5 font-mono text-xs font-bold text-blue-700 dark:text-blue-400">
+                          <span className="flex w-14 shrink-0 items-center gap-1.5 font-mono text-[13px] font-bold text-blue-700 dark:text-blue-400">
                             <StatusDot lectureId={lec.id} />
                             {lec.code}
                           </span>
@@ -90,8 +90,8 @@ export const HomePage: React.FC = () => {
                             {lec.titleZh}
                           </h3>
                         </div>
-                        <div className="pl-[4.25rem] text-xs text-stone-500 dark:text-zinc-400">{lec.titleEn}</div>
-                        <div className="pl-[4.25rem] pt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10.5px] text-stone-400 dark:text-zinc-500">
+                        <div className="pl-[4.25rem] text-[13px] text-stone-500 dark:text-zinc-400">{lec.titleEn}</div>
+                        <div className="pl-[4.25rem] pt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11.5px] text-stone-400 dark:text-zinc-500">
                           <span className={lec.examWeight === 'core' ? 'text-red-700/80 dark:text-red-400/80' : ''}>{WEIGHT[lec.examWeight]}</span>
                           {lec.derivations.length > 0 && <span>{lec.derivations.length} 组推导</span>}
                           {pack && <span>{pack.flashcards.length} 卡片</span>}

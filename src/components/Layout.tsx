@@ -31,10 +31,10 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
         <BookOpen className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
         <div>
           <div className="font-serif-display text-base font-semibold tracking-tight text-stone-900 dark:text-zinc-100 leading-tight">
-            ML Study Monograph
+            机器学习复习手册
           </div>
-          <div className="font-mono text-[10px] text-stone-500 dark:text-zinc-500">
-            Lectures · Flashcards · Practice
+          <div className="font-mono text-[11px] text-stone-500 dark:text-zinc-500">
+            ML Review Companion · L00–L16
           </div>
         </div>
       </Link>
@@ -45,7 +45,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
           <Link
             to="/"
             onClick={() => setDrawerOpen(false)}
-            className={`block rounded-md px-3 py-1.5 text-xs font-medium transition ${
+            className={`block rounded-md px-3 py-[7px] text-[14px] font-medium transition ${
               location.pathname === '/'
                 ? 'bg-stone-200/70 text-stone-950 font-semibold dark:bg-zinc-800 dark:text-white'
                 : 'text-stone-600 hover:bg-stone-100 dark:text-zinc-400 dark:hover:bg-zinc-900'
@@ -56,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
         </div>
 
         <div className="space-y-0.5">
-          <div className="flex items-center gap-1.5 px-3 pb-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400">
+          <div className="flex items-center gap-1.5 px-3 pb-1 text-[11px] font-mono font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-400">
             <GraduationCap className="h-3 w-3" />
             复习中心 (Review)
           </div>
@@ -68,7 +68,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
                 key={n.to}
                 to={n.to}
                 onClick={() => setDrawerOpen(false)}
-                className={`flex items-center justify-between rounded-md px-3 py-1.5 text-xs transition ${
+                className={`flex items-center justify-between rounded-md px-3 py-[7px] text-[14px] transition ${
                   active
                     ? 'bg-blue-50 text-blue-800 font-semibold dark:bg-blue-950/40 dark:text-blue-300'
                     : 'text-stone-700 hover:bg-stone-100/90 dark:text-zinc-300 dark:hover:bg-zinc-900'
@@ -76,7 +76,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
               >
                 <span>{n.label}</span>
                 {badge > 0 && (
-                  <span className="rounded-full bg-stone-200 px-1.5 font-mono text-[10px] text-stone-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <span className="rounded-full bg-stone-200 px-1.5 font-mono text-[11px] text-stone-700 dark:bg-zinc-800 dark:text-zinc-300">
                     {badge}
                   </span>
                 )}
@@ -89,7 +89,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
           const items = LECTURES.filter((l) => l.partGroup === group);
           return (
             <div key={group} className="space-y-1">
-              <div className="px-3 text-[10px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-zinc-500">
+              <div className="px-3 text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-zinc-500">
                 {group}
               </div>
               {items.map((lec) => {
@@ -100,14 +100,14 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
                     key={lec.id}
                     to={to}
                     onClick={() => setDrawerOpen(false)}
-                    className={`flex items-baseline gap-2.5 rounded-md px-3 py-1.5 text-xs transition ${
+                    className={`flex items-baseline gap-2.5 rounded-md px-3 py-[7px] text-[14px] transition ${
                       active
                         ? 'bg-blue-50 text-blue-800 font-semibold border-l-2 border-blue-700 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-400'
                         : 'text-stone-700 hover:bg-stone-100/90 dark:text-zinc-300 dark:hover:bg-zinc-900'
                     }`}
                   >
                     <StatusDot lectureId={lec.id} className="self-center" />
-                    <span className="font-mono text-[11px] font-semibold text-stone-400 dark:text-zinc-500 w-10 shrink-0">
+                    <span className="font-mono text-[12px] font-semibold text-stone-400 dark:text-zinc-500 w-10 shrink-0">
                       {lec.code}
                     </span>
                     <span className="truncate">{lec.titleZh}</span>
@@ -120,7 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
       </nav>
 
       {/* Subtle Footer */}
-      <div className="border-t border-stone-200 px-5 py-3 text-[11px] text-stone-500 dark:border-zinc-800 dark:text-zinc-500">
+      <div className="border-t border-stone-200 px-5 py-3 text-[12px] text-stone-500 dark:border-zinc-800 dark:text-zinc-500">
         {LECTURES.length} 讲 · {ALL_CARDS.length} 张卡片 · {ALL_QUESTIONS.length} 道练习
       </div>
     </div>
@@ -157,7 +157,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
             >
               {drawerOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-            <span className="hidden sm:inline font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+            <span className="hidden sm:inline font-mono text-[12px] text-stone-500 dark:text-zinc-400">
               Machine Learning Review Companion · L00 – L16
             </span>
           </div>
@@ -167,14 +167,14 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
               href="https://github.com/atlasmarkz/ml-interactive-lab"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-600 hover:bg-stone-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-[13px] text-stone-600 hover:bg-stone-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
             >
               <Github className="h-3.5 w-3.5" />
               Source
             </a>
             <button
               onClick={onToggleDark}
-              className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-700 hover:bg-stone-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-stone-200 bg-white px-2.5 py-1 text-[13px] text-stone-700 hover:bg-stone-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
             >
               {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
               {isDark ? 'Light' : 'Dark'}
@@ -182,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
           </div>
         </header>
 
-        <main className="flex-1 px-4 sm:px-8 lg:px-12 py-8 sm:py-10 max-w-4xl w-full mx-auto">
+        <main className="flex-1 px-5 sm:px-8 lg:px-12 py-10 sm:py-12 max-w-[78rem] w-full mx-auto">
           {children}
         </main>
       </div>

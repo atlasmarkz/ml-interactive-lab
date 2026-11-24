@@ -16,7 +16,7 @@ export const PageHeader: React.FC<{ kicker: string; title: string; description: 
   children,
 }) => (
   <header className="border-b border-stone-200 pb-6 dark:border-zinc-800 space-y-3">
-    <nav className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+    <nav className="flex flex-wrap gap-1.5 font-mono text-[12px]">
       {REVIEW_NAV.map((n) => (
         <Link
           key={n.to}
@@ -27,9 +27,9 @@ export const PageHeader: React.FC<{ kicker: string; title: string; description: 
         </Link>
       ))}
     </nav>
-    <div className="font-mono text-xs font-medium uppercase tracking-widest text-blue-700 dark:text-blue-400">{kicker}</div>
-    <h1 className="font-serif-display text-3xl font-semibold tracking-tight text-stone-950 dark:text-zinc-50">{title}</h1>
-    <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-zinc-400">{description}</p>
+    <div className="font-mono text-[13px] font-medium uppercase tracking-widest text-blue-700 dark:text-blue-400">{kicker}</div>
+    <h1 className="font-serif-display text-[2.2rem] font-semibold tracking-tight text-stone-950 dark:text-zinc-50">{title}</h1>
+    <p className="max-w-2xl text-[15.5px] leading-relaxed text-stone-600 dark:text-zinc-400">{description}</p>
     {children}
   </header>
 );

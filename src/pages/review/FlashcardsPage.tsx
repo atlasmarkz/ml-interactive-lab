@@ -48,7 +48,7 @@ export const FlashcardsPage: React.FC = () => {
       <LectureFilter selected={selected} onChange={(ids) => { setSelected(ids); setRound((r) => r + 1); }} counts={mode === 'due' ? dueCounts : undefined} />
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="inline-flex rounded-md border border-stone-200 bg-white p-0.5 text-xs dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="inline-flex rounded-md border border-stone-200 bg-white p-0.5 text-[13px] dark:border-zinc-800 dark:bg-zinc-900">
           {([
             ['due', '到期复习'],
             ['all', '全部浏览（随机）'],
@@ -62,7 +62,7 @@ export const FlashcardsPage: React.FC = () => {
             </button>
           ))}
         </div>
-        <span className="font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+        <span className="font-mono text-[12px] text-stone-500 dark:text-zinc-400">
           本轮 {deck.length} 张 · 范围内共 {inScope.length} 张
         </span>
       </div>

@@ -30,18 +30,18 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-200 px-5 py-4 dark:border-zinc-800">
         <div className="space-y-1">
-          <div className="font-mono text-[11px] font-medium uppercase tracking-wider text-blue-700 dark:text-blue-400">
+          <div className="font-mono text-[12px] font-medium uppercase tracking-wider text-blue-700 dark:text-blue-400">
             Derivation · 零跳步数学推导链
           </div>
           <h3 className="font-serif-display text-lg font-semibold text-stone-900 dark:text-zinc-100 leading-snug">
             <RichText text={spec.title} />
           </h3>
-          <p className="text-[13.5px] math-prose text-stone-600 dark:text-zinc-300">
+          <p className="text-[15.5px] math-prose text-stone-600 dark:text-zinc-300">
             <RichText text={spec.goal} />
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs shrink-0">
+        <div className="flex items-center gap-2 text-[13px] shrink-0">
           {isSelfTestMode ? (
             <>
               <button
@@ -87,7 +87,7 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
               <div className="flex items-start gap-3">
                 <button
                   onClick={() => toggleStep(idx)}
-                  className="mt-1 flex items-center gap-1 rounded border border-stone-200 bg-stone-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-stone-700 hover:border-blue-400 hover:text-blue-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-blue-500 shrink-0 cursor-pointer"
+                  className="mt-1 flex items-center gap-1 rounded border border-stone-200 bg-stone-50 px-2 py-0.5 font-mono text-[12px] font-semibold text-stone-700 hover:border-blue-400 hover:text-blue-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-blue-500 shrink-0 cursor-pointer"
                   title="点击展开或折叠该步推导依据"
                 >
                   {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -96,7 +96,7 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
 
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] font-medium text-blue-700 dark:text-blue-400">
+                    <span className="font-mono text-[12px] font-medium text-blue-700 dark:text-blue-400">
                       [<RichText text={step.rule} />]
                     </span>
                   </div>
@@ -106,7 +106,7 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
                   </div>
 
                   {isOpen && (
-                    <p className="border-l-2 border-stone-300 pl-3.5 text-[13px] math-prose text-stone-600 dark:border-zinc-700 dark:text-zinc-300">
+                    <p className="border-l-2 border-stone-300 pl-3.5 text-[15px] math-prose text-stone-600 dark:border-zinc-700 dark:text-zinc-300">
                       <RichText text={step.justification} />
                     </p>
                   )}
@@ -119,7 +119,7 @@ export const DerivationChain: React.FC<DerivationChainProps> = ({ spec }) => {
 
       {/* Proof Conclusion */}
       {!isSelfTestMode && (
-        <div className="border-t border-stone-200 bg-stone-50/80 px-5 py-3.5 text-[13px] math-prose text-stone-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300">
+        <div className="border-t border-stone-200 bg-stone-50/80 px-5 py-3.5 text-[15px] math-prose text-stone-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300">
           <span className="font-mono font-semibold text-stone-900 dark:text-zinc-100 mr-1.5">
             Q.E.D. / 物理含义:
           </span>

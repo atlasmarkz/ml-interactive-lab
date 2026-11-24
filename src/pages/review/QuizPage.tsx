@@ -81,7 +81,7 @@ export const QuizPage: React.FC = () => {
 
       <LectureFilter selected={selected} onChange={(ids) => { setSelected(ids); restart(); }} counts={counts} />
 
-      <div className="flex flex-wrap items-center gap-3 text-xs">
+      <div className="flex flex-wrap items-center gap-3 text-[13px]">
         <div className="inline-flex rounded-md border border-stone-200 bg-white p-0.5 dark:border-zinc-800 dark:bg-zinc-900">
           {([
             ['random', '随机抽题'],
@@ -144,13 +144,13 @@ export const QuizPage: React.FC = () => {
             {score.answered < session.length ? `有 ${session.length - score.answered} 题跳过未作答。` : ''}
             答错的题已加入错题本，可切换到「错题本」重练。
           </p>
-          <button onClick={restart} className="rounded-md bg-stone-900 px-4 py-2 text-xs font-medium text-white dark:bg-blue-600 cursor-pointer">
+          <button onClick={restart} className="rounded-md bg-stone-900 px-4 py-2 text-[13px] font-medium text-white dark:bg-blue-600 cursor-pointer">
             再来一组
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center justify-between font-mono text-[11px] text-stone-500 dark:text-zinc-400">
+          <div className="flex items-center justify-between font-mono text-[12px] text-stone-500 dark:text-zinc-400">
             <span>第 {pos + 1} / {session.length} 题</span>
             <span>本轮 {score.right} / {score.answered} 答对</span>
           </div>
@@ -164,7 +164,7 @@ export const QuizPage: React.FC = () => {
           <div className="flex justify-end">
             <button
               onClick={() => setPos((p) => p + 1)}
-              className="inline-flex items-center gap-1.5 rounded-md border border-stone-300 bg-white px-3.5 py-1.5 text-xs font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-stone-300 bg-white px-3.5 py-1.5 text-[13px] font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
             >
               {pos + 1 < session.length ? '下一题' : '查看结果'}
               <ArrowRight className="h-3.5 w-3.5" />

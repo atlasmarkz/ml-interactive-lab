@@ -39,11 +39,11 @@ export const LectureFilter: React.FC<{ selected: string[]; onChange: (ids: strin
   return (
     <div className="rounded-lg border border-stone-200 bg-white p-3.5 dark:border-zinc-800 dark:bg-[#11151d] space-y-2.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400">
+        <span className="font-mono text-[12px] font-semibold uppercase tracking-wider text-stone-500 dark:text-zinc-400">
           复习范围 {all ? '· 全部讲次' : `· 已选 ${selected.length} 讲`}
         </span>
         {!all && (
-          <button onClick={() => onChange([])} className="text-xs text-blue-700 hover:underline dark:text-blue-400 cursor-pointer">
+          <button onClick={() => onChange([])} className="text-[13px] text-blue-700 hover:underline dark:text-blue-400 cursor-pointer">
             重置为全部
           </button>
         )}
@@ -53,7 +53,7 @@ export const LectureFilter: React.FC<{ selected: string[]; onChange: (ids: strin
           <div key={group} className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => toggleGroup(group)}
-              className="w-14 shrink-0 text-left font-mono text-[10.5px] font-semibold text-stone-400 hover:text-blue-700 dark:text-zinc-500 dark:hover:text-blue-400 cursor-pointer"
+              className="w-14 shrink-0 text-left font-mono text-[11.5px] font-semibold text-stone-400 hover:text-blue-700 dark:text-zinc-500 dark:hover:text-blue-400 cursor-pointer"
               title="选择 / 取消整个 Part"
             >
               {SHORT_GROUP(group)}
@@ -64,7 +64,7 @@ export const LectureFilter: React.FC<{ selected: string[]; onChange: (ids: strin
                 onClick={() => toggle(l.id)}
                 title={l.titleZh}
                 aria-pressed={!all && selected.includes(l.id)}
-                className={`rounded border px-2 py-0.5 font-mono text-[11px] transition cursor-pointer ${
+                className={`rounded border px-2 py-0.5 font-mono text-[12px] transition cursor-pointer ${
                   !all && selected.includes(l.id)
                     ? 'border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-600'
                     : isOn(l.id)
