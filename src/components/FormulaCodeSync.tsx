@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Code2, Layers, RotateCcw } from 'lucide-reac
 import { FormulaCodeSpec, SemanticRole } from '../types/curriculum';
 import { MathFormula } from './MathFormula';
 import { RichText } from './RichText';
+import { CODE, tokenizePython } from './code/theme';
 
 const ROLE_STYLES: Record<
   SemanticRole,
@@ -140,8 +141,8 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-stone-200 dark:divide-zinc-800">
-        <div className="lg:col-span-6 p-5 flex flex-col justify-between gap-4">
+      <div className="grid grid-cols-1 divide-y divide-stone-200 dark:divide-zinc-800">
+        <div className="p-5 flex flex-col gap-4">
           <div>
             <div className="mb-2 flex items-center justify-between text-[12px] text-stone-400">
               <span className="font-mono uppercase tracking-wider">Formula → Code Sync</span>
@@ -204,15 +205,15 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
           )}
         </div>
 
-        <div className="lg:col-span-6 bg-[#0d1117] text-zinc-100 flex flex-col">
-          <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 text-[12px] text-zinc-400">
+        <div className="bg-[#0d1117] text-zinc-100 flex flex-col">
+          <div className="flex items-center justify-between border-b border-[#30363d] bg-[#161b22] px-4 py-2.5 text-[12.5px] text-[#8b949e]">
             <span className="inline-flex items-center gap-1.5 font-mono">
               <Code2 className="h-3.5 w-3.5 text-emerald-400" />
               {framework === 'pytorch' ? 'pytorch_reference.py' : 'numpy_reference.py'}
             </span>
-            <span>悬停代码行高亮对应符号</span>
+            <span>悬停或点击代码行 ↔ 公式符号</span>
           </div>
-          <div className="overflow-x-auto py-3 font-mono text-[13px] leading-6 flex-1">
+          <div className="code-scroll overflow-x-auto py-4 font-mono text-[13.5px] leading-[1.75] flex-1">
             {codeLines.map((line, idx) => {
               const lineNum = idx + 1;
               const isHighlighted = activeLines.has(lineNum);
@@ -232,10 +233,18 @@ export const FormulaCodeSync: React.FC<FormulaCodeSyncProps> = ({ spec }) => {
                     mappedTerm ? 'cursor-pointer' : ''
                   } ${highlightClass}`}
                 >
-                  <span className="mr-3 w-5 shrink-0 select-none text-right text-zinc-600">
+                  <span className="mr-4 w-5 shrink-0 select-none text-right tabular-nums" style={{ color: isHighlighted ? CODE.text : CODE.gutter }}>
                     {lineNum}
                   </span>
-                  <pre className="whitespace-pre text-zinc-200">{line || ' '}</pre>
+                  <pre className="whitespace-pre" style={{ color: CODE.text }}>
+                    {line
+                      ? tokenizePython(line).map((tk, ti) => (
+                          <span key={ti} style={{ color: tk.color, fontStyle: tk.italic ? 'italic' : undefined }}>
+                            {tk.text}
+                          </span>
+                        ))
+                      : ' '}
+                  </pre>
                 </div>
               );
             })}

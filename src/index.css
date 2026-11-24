@@ -217,3 +217,24 @@ input[type='range'].viz-range {
     display: none !important;
   }
 }
+
+/* Dark, unobtrusive scrollbars inside code surfaces */
+.cm-scroller,
+.code-scroll {
+  scrollbar-color: #30363d #0d1117;
+  scrollbar-width: thin;
+}
+.cm-scroller::-webkit-scrollbar,
+.code-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.cm-scroller::-webkit-scrollbar-track,
+.code-scroll::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+.cm-scroller::-webkit-scrollbar-thumb,
+.code-scroll::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 8px;
+}

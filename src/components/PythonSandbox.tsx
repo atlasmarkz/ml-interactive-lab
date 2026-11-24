@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
-import { oneDark } from '@codemirror/theme-one-dark';
-import { Play, RotateCcw, Terminal, Loader2, CheckCircle2, AlertCircle, BarChart3 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, FileCode2, Loader2, Play, RotateCcw, TerminalSquare } from 'lucide-react';
 import { PlotSeriesData, SandboxSpec } from '../types/curriculum';
 import { RichText } from './RichText';
+import { CODE, codeTheme } from './code/theme';
+import { LineChart, SERIES } from './explore/kit';
 
 // Singleton worker shared across all pages so Pyodide only downloads once per session
 let sharedWorker: Worker | null = null;
@@ -17,133 +18,36 @@ function getWorker(): Worker {
   return sharedWorker;
 }
 
-const MiniSvgChart: React.FC<{ plot: PlotSeriesData }> = ({ plot }) => {
-  const width = 560;
-  const height = 210;
-  const padL = 48;
-  const padR = 16;
-  const padT = 18;
-  const padB = 34;
+/** Round a data range outward to tick-friendly bounds (1, 2, 2.5, 5 × 10^k steps). */
+function niceDomain(lo: number, hi: number): [number, number] {
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [0, 1];
+  if (hi - lo < 1e-12) return [lo - 1, hi + 1];
+  const raw = (hi - lo) / 4;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => (hi - lo) / s <= 5) ?? raw;
+  return [Math.floor(lo / step) * step, Math.ceil(hi / step) * step];
+}
 
-  const allX = plot.series.flatMap((s) => s.x).filter((v) => Number.isFinite(v));
-  const allY = plot.series.flatMap((s) => s.y).filter((v) => Number.isFinite(v));
-  if (!allX.length || !allY.length) return null;
-
-  const minX = Math.min(...allX);
-  const maxX = Math.max(...allX) === minX ? minX + 1 : Math.max(...allX);
-  const rawMinY = Math.min(...allY);
-  const rawMaxY = Math.max(...allY);
-  const spanY = rawMaxY - rawMinY || 1;
-  const minY = rawMinY - spanY * 0.08;
-  const maxY = rawMaxY + spanY * 0.08;
-
-  const toX = (x: number) => padL + ((x - minX) / (maxX - minX)) * (width - padL - padR);
-  const toY = (y: number) => padT + (1 - (y - minY) / (maxY - minY)) * (height - padT - padB);
-
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => minY + t * (maxY - minY));
-
+const SandboxPlot: React.FC<{ plot: PlotSeriesData }> = ({ plot }) => {
+  const xs = plot.series.flatMap((s) => s.x).filter(Number.isFinite);
+  const ys = plot.series.flatMap((s) => s.y).filter(Number.isFinite);
+  if (!xs.length || !ys.length) return null;
+  const xDomain: [number, number] = [Math.min(...xs), Math.max(...xs) === Math.min(...xs) ? Math.min(...xs) + 1 : Math.max(...xs)];
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-900">
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100">
-          <BarChart3 className="h-3.5 w-3.5 text-blue-500" />
-          {plot.title}
-        </div>
-        <div className="flex flex-wrap gap-3 text-[11px] text-slate-600 dark:text-slate-300">
-          {plot.series.map((s) => (
-            <span key={s.name} className="inline-flex items-center gap-1.5">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: s.color ?? '#3b82f6' }}
-              />
-              {s.name}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto overflow-visible">
-        {yTicks.map((yv, i) => {
-          const py = toY(yv);
-          return (
-            <g key={i}>
-              <line
-                x1={padL}
-                x2={width - padR}
-                y1={py}
-                y2={py}
-                className="stroke-slate-200 dark:stroke-slate-800"
-                strokeDasharray="3 3"
-              />
-              <text
-                x={padL - 8}
-                y={py + 3}
-                textAnchor="end"
-                className="fill-slate-400 text-[10px] font-mono"
-              >
-                {Math.abs(yv) >= 100 ? yv.toFixed(0) : yv.toFixed(2)}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Axes */}
-        <line
-          x1={padL}
-          x2={width - padR}
-          y1={height - padB}
-          y2={height - padB}
-          className="stroke-slate-300 dark:stroke-slate-700"
-        />
-        <line
-          x1={padL}
-          x2={padL}
-          y1={padT}
-          y2={height - padB}
-          className="stroke-slate-300 dark:stroke-slate-700"
-        />
-
-        {/* Curves */}
-        {plot.series.map((s) => {
-          const d = s.x
-            .map((x, idx) => `${idx === 0 ? 'M' : 'L'} ${toX(x).toFixed(1)} ${toY(s.y[idx]).toFixed(1)}`)
-            .join(' ');
-          return (
-            <path
-              key={s.name}
-              d={d}
-              fill="none"
-              stroke={s.color ?? '#3b82f6'}
-              strokeWidth={2.2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-          );
-        })}
-
-        {/* Labels */}
-        {plot.xlabel && (
-          <text
-            x={(padL + width - padR) / 2}
-            y={height - 6}
-            textAnchor="middle"
-            className="fill-slate-500 text-[10px]"
-          >
-            {plot.xlabel}
-          </text>
-        )}
-        {plot.ylabel && (
-          <text
-            x={12}
-            y={(padT + height - padB) / 2}
-            textAnchor="middle"
-            transform={`rotate(-90 12 ${(padT + height - padB) / 2})`}
-            className="fill-slate-500 text-[10px]"
-          >
-            {plot.ylabel}
-          </text>
-        )}
-      </svg>
+    <div className="rounded-xl border border-stone-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#11151d]">
+      <div className="mb-2 text-[14px] font-semibold text-stone-800 dark:text-zinc-100">{plot.title}</div>
+      <LineChart
+        ariaLabel={plot.title}
+        xDomain={xDomain}
+        yDomain={niceDomain(Math.min(...ys), Math.max(...ys))}
+        xLabel={plot.xlabel}
+        yLabel={plot.ylabel}
+        series={plot.series.map((s, i) => ({
+          name: s.name,
+          color: SERIES[i % SERIES.length],
+          points: s.x.map((x, k) => [x, s.y[k]] as [number, number]),
+        }))}
+      />
     </div>
   );
 };
@@ -153,7 +57,7 @@ interface PythonSandboxProps {
   isDark: boolean;
 }
 
-export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) => {
+export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec }) => {
   const [code, setCode] = useState(spec.starterCode);
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<string>('');
@@ -162,6 +66,7 @@ export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) =>
   const [plots, setPlots] = useState<PlotSeriesData[]>([]);
   const [elapsedMs, setElapsedMs] = useState<number | null>(null);
   const reqIdRef = useRef(0);
+  const edited = code !== spec.starterCode;
 
   useEffect(() => {
     setCode(spec.starterCode);
@@ -176,7 +81,7 @@ export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) =>
     const myId = ++reqIdRef.current;
     setRunning(true);
     setError('');
-    setStatus('准备执行 Python...');
+    setStatus('准备执行 Python…');
 
     const onMessage = (e: MessageEvent) => {
       const msg = e.data;
@@ -203,96 +108,116 @@ export const PythonSandbox: React.FC<PythonSandboxProps> = ({ spec, isDark }) =>
     worker.postMessage({ id: myId, code });
   };
 
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 bg-stone-50/70 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
-        <div>
-          <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-stone-700 dark:text-zinc-300" />
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
-              <RichText text={spec.title} />
-            </h3>
-            <span className="rounded border border-stone-300 bg-white px-1.5 py-0.5 font-mono text-[10px] text-stone-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
-              Pyodide · NumPy
-            </span>
-          </div>
-          <p className="mt-0.5 text-[12.5px] leading-relaxed text-stone-500 dark:text-zinc-400">
-            <RichText text={spec.description} />
-          </p>
-        </div>
+  const ran = elapsedMs !== null || !!error;
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setCode(spec.starterCode)}
-            className="inline-flex items-center gap-1.5 rounded-md border border-stone-300 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:bg-stone-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            重置
-          </button>
-          <button
-            onClick={handleRun}
-            disabled={running}
-            className="inline-flex items-center gap-1.5 rounded-md bg-stone-900 px-3.5 py-1 text-xs font-medium text-white hover:bg-stone-800 disabled:opacity-60 transition dark:bg-blue-600 dark:hover:bg-blue-500 cursor-pointer"
-          >
-            {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
-            {running ? '运行中...' : '运行验证'}
-          </button>
-        </div>
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <h3 className="font-serif-display text-lg font-semibold text-stone-900 dark:text-zinc-100">
+          <RichText text={spec.title} />
+        </h3>
+        <p className="prose-zh text-[15px] text-stone-600 dark:text-zinc-400">
+          <RichText text={spec.description} />
+        </p>
       </div>
 
-      {/* Editor */}
-      <div className="border-b border-slate-200 dark:border-slate-800 text-xs">
+      {/* Code window */}
+      <div className="overflow-hidden rounded-xl shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)]" style={{ background: CODE.bg, border: `1px solid ${CODE.border}` }}>
+        <div className="flex items-center justify-between gap-3 px-3 py-2" style={{ background: CODE.panel, borderBottom: `1px solid ${CODE.border}` }}>
+          <div className="flex items-center gap-2">
+            <span className="flex gap-1.5 pl-1" aria-hidden>
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+            </span>
+            <span className="ml-2 inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-[12.5px]" style={{ background: CODE.bg, color: CODE.text }}>
+              <FileCode2 className="h-3.5 w-3.5" style={{ color: '#3fb950' }} />
+              sandbox.py
+              {edited && <span className="h-1.5 w-1.5 rounded-full bg-[#d29922]" title="已修改" />}
+            </span>
+            <span className="hidden font-mono text-[11.5px] sm:inline" style={{ color: CODE.muted }}>Python · NumPy（Pyodide，在浏览器内运行）</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCode(spec.starterCode)}
+              disabled={!edited}
+              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12.5px] transition hover:bg-white/10 disabled:opacity-40 cursor-pointer disabled:cursor-default"
+              style={{ color: CODE.muted }}
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              重置
+            </button>
+            <button
+              onClick={handleRun}
+              disabled={running}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#238636] px-3 py-1 text-[12.5px] font-medium text-white transition hover:bg-[#2ea043] disabled:opacity-60 cursor-pointer"
+            >
+              {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+              {running ? '运行中…' : '运行'}
+            </button>
+          </div>
+        </div>
+
         <CodeMirror
           value={code}
-          height="290px"
-          extensions={[python()]}
-          theme={isDark ? oneDark : 'light'}
+          minHeight="120px"
+          maxHeight="480px"
+          extensions={[python(), ...codeTheme]}
+          theme="none"
           onChange={(val) => setCode(val)}
           basicSetup={{
             lineNumbers: true,
             highlightActiveLineGutter: true,
+            highlightActiveLine: true,
             foldGutter: false,
             autocompletion: true,
           }}
         />
-      </div>
 
-      {/* Output & Dynamic Charts */}
-      <div className="bg-slate-50 p-4 dark:bg-slate-950/70 space-y-3">
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-mono font-medium">输出控制台 (stdout)</span>
-          {status && (
-            <span className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-              <Loader2 className="h-3 w-3 animate-spin" /> {status}
+        {/* Console */}
+        <div style={{ borderTop: `1px solid ${CODE.border}`, background: '#010409' }}>
+          <div className="flex items-center justify-between px-4 py-2 font-mono text-[12px]" style={{ color: CODE.muted }}>
+            <span className="inline-flex items-center gap-1.5">
+              <TerminalSquare className="h-3.5 w-3.5" />
+              控制台
             </span>
-          )}
-          {!running && elapsedMs !== null && !error && (
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5" /> 完成 ({elapsedMs} ms)
-            </span>
-          )}
+            {status && (
+              <span className="inline-flex items-center gap-1.5 text-[#58a6ff]">
+                <Loader2 className="h-3 w-3 animate-spin" /> {status}
+              </span>
+            )}
+            {!running && elapsedMs !== null && !error && (
+              <span className="inline-flex items-center gap-1 text-[#3fb950]">
+                <CheckCircle2 className="h-3.5 w-3.5" /> 完成 · {elapsedMs} ms
+              </span>
+            )}
+            {!running && error && (
+              <span className="inline-flex items-center gap-1 text-[#f85149]">
+                <AlertCircle className="h-3.5 w-3.5" /> 出错
+              </span>
+            )}
+          </div>
+          <pre className="code-scroll max-h-56 overflow-auto px-4 pb-4 font-mono text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: CODE.text }}>
+            {ran ? (
+              <>
+                <span style={{ color: CODE.muted }}>$ python sandbox.py{'\n'}</span>
+                {stdout}
+                {error && <span style={{ color: '#ff7b72' }}>{(stdout ? '\n' : '') + error}</span>}
+              </>
+            ) : (
+              <span style={{ color: CODE.muted }}>点击「运行」在浏览器内执行这段代码。第一次运行需要 2–5 秒加载 Python 运行时，之后几乎立即完成；可以随意修改代码再运行。</span>
+            )}
+          </pre>
         </div>
-
-        <pre className="max-h-52 overflow-auto rounded-xl bg-slate-900 p-3.5 font-mono text-xs leading-relaxed text-slate-100">
-          {stdout || '点击右上角「运行 Python」在浏览器内本地执行 NumPy 代码（首次点击需约 2~5 秒加载 Pyodide WASM，之后毫秒级运行）。'}
-        </pre>
-
-        {error && (
-          <div className="flex items-start gap-2 rounded-xl border border-rose-300 bg-rose-50 p-3 text-xs text-rose-800 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-            <pre className="overflow-x-auto whitespace-pre-wrap font-mono">{error}</pre>
-          </div>
-        )}
-
-        {plots.length > 0 && (
-          <div className="grid grid-cols-1 gap-3 pt-1">
-            {plots.map((p, idx) => (
-              <MiniSvgChart key={idx} plot={p} />
-            ))}
-          </div>
-        )}
       </div>
+
+      {plots.length > 0 && (
+        <div className="grid grid-cols-1 gap-3">
+          {plots.map((p, idx) => (
+            <SandboxPlot key={idx} plot={p} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

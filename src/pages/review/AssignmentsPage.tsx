@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { HANDS_ON_ASSIGNMENTS, TUTORIALS, WRITTEN_ASSIGNMENTS } from '../../data/review';
+import { ALL_QUESTIONS, HANDS_ON_ASSIGNMENTS, TUTORIALS, WRITTEN_ASSIGNMENTS, waKey } from '../../data/review';
 import { LectureTag } from '../../components/review/ReviewBits';
 import { PageHeader } from './PageHeader';
 
@@ -13,6 +13,16 @@ const KIND = {
 } as const;
 
 const unique = (ids: string[]) => Array.from(new Set(ids));
+
+/** Number of original practice questions mirroring each WA question, keyed like "WA3 Q5". */
+const STYLE_COUNT = ALL_QUESTIONS.reduce<Record<string, number>>((acc, q) => {
+  const k = waKey(q.style);
+  if (k) {
+    acc[k] = (acc[k] ?? 0) + 1;
+    acc[k.split(' ')[0]] = (acc[k.split(' ')[0]] ?? 0) + 1;
+  }
+  return acc;
+}, {});
 
 export const AssignmentsPage: React.FC = () => (
   <div className="space-y-8 pb-12">
@@ -34,10 +44,10 @@ export const AssignmentsPage: React.FC = () => (
                 <div className="font-mono text-[12px] text-stone-500 dark:text-zinc-400">{wa.scope}</div>
               </div>
               <Link
-                to={`/review/quiz?mode=all&l=${lectures.join(',')}`}
+                to={STYLE_COUNT[wa.id.toUpperCase()] ? `/review/quiz?mode=all&style=${wa.id.toUpperCase()}` : `/review/quiz?mode=all&l=${lectures.join(',')}`}
                 className="inline-flex items-center gap-1 rounded-md bg-stone-900 px-2.5 py-1 text-[13px] font-medium text-white hover:bg-stone-800 dark:bg-blue-600 dark:hover:bg-blue-500"
               >
-                练习同范围题目 <ArrowRight className="h-3.5 w-3.5" />
+                {STYLE_COUNT[wa.id.toUpperCase()] ? `练 ${wa.id.toUpperCase()} 题型（${STYLE_COUNT[wa.id.toUpperCase()]}）` : '练习同范围题目'} <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
             <table className="w-full text-[15px]">
@@ -50,6 +60,18 @@ export const AssignmentsPage: React.FC = () => (
                       <span className={`rounded px-1.5 py-0.5 text-[11.5px] ${KIND[item.kind].cls}`}>{KIND[item.kind].label}</span>
                     </td>
                     <td className="px-4 py-2 text-right whitespace-nowrap">
+                      {(() => {
+                        const key = `${wa.id.toUpperCase()} ${item.label}`;
+                        const n = STYLE_COUNT[key];
+                        return n ? (
+                          <Link
+                            to={`/review/quiz?mode=all&style=${encodeURIComponent(key)}`}
+                            className="mr-2 rounded-md border border-blue-300 px-2 py-0.5 text-[12.5px] text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                          >
+                            练这类题 {n}
+                          </Link>
+                        ) : null;
+                      })()}
                       <span className="inline-flex gap-1">
                         {item.lectureIds.map((id) => (
                           <LectureTag key={id} lectureId={id} />

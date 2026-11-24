@@ -13,7 +13,7 @@
 | **逐讲页面** `/lecture/:slug` | 考点速记 → 必记公式（可遮挡默写）→ **交互探索** → 推导链 → 图解 → 数值验算器 → 概念对比 → 公式↔代码 → 易错点 → Python 实测 → 本讲抽认卡与练习题。顶部可勾选「知识点自查表」并标记本讲掌握程度。 |
 | **复习中心** `/review` | 今日到期卡片、练习正确率、错题数、连续复习天数；按 Part 列出每讲的自查 / 卡片 / 练习进度；根据错题与到期卡片推荐优先复习的讲次。 |
 | **抽认卡** `/review/flashcards` | 间隔重复（SM-2 变体）：空格翻面，1–4 评分（忘了 / 模糊 / 记得 / 很熟）；可按讲次或整个 Part 过滤。 |
-| **练习与错题** `/review/quiz` | 随机抽题、按讲全部、错题本三种模式；选择题自动判分，计算 / 简答题对照参考答案自评，答错自动进入错题本。 |
+| **练习与错题** `/review/quiz` | 随机抽题、按讲全部、错题本三种模式；可按 WA 题型筛选（如 `?style=WA3 Q5`，作业对照页每题旁有「练这类题」入口）；选择题自动判分，计算 / 简答题对照参考答案自评，答错自动进入错题本。 |
 | **公式速查** `/review/formulas` | 全部核心公式按讲次汇总，可搜索、遮挡默写、打印。 |
 | **作业 ↔ 讲次** `/review/assignments` | WA1–WA4 每题考查的知识点、HA1–HA12 涉及的概念、Tutorial 对应的讲次。 |
 
@@ -32,7 +32,7 @@
 | 4 · Generative Models | L10, L11, L12, L13 | VAE（ELBO、重参数化）；GAN（D*、JSD、两种生成器损失）；Diffusion（DDPM、DDIM、LDM、引导、EDM）；Flow Matching（CFM、ODE / SDE） |
 | 5 · Reinforcement Learning | L14, L15, L16 | MDP、价值迭代、Q-Learning / SARSA；DQN、目标网络、经验回放、Double DQN；策略梯度、REINFORCE、Actor-Critic、PPO、SAC |
 
-当前内容量：153 张抽认卡、166 道练习题、96 条核心公式、22 个交互组件，以及 29 组逐步推导。
+当前内容量：153 张抽认卡、196 道练习题（其中 30 道是按 WA1–WA4 原题题型编写的多小问计算题）、96 条核心公式、22 个交互组件，以及 29 组逐步推导。
 
 ### 交互组件一览
 
@@ -53,7 +53,7 @@ src/
 ├── data/
 │   ├── lectures.ts                 # L00–L16 索引与 Part 分组
 │   ├── lecturesPart0.ts … Part5.ts # 每讲：推导、概念、公式↔代码、易错点、沙盒
-│   └── review/                     # 每讲：考点速记、公式、抽认卡、练习题（extraQuiz.ts 为第二批）；作业 ↔ 讲次映射
+│   └── review/                     # 每讲：考点速记、公式、抽认卡、练习题（extraQuiz.ts 第二批；waDrills.ts 为脚本生成并独立复核的 WA 题型计算题）；作业 ↔ 讲次映射
 ├── types/                          # curriculum.ts（讲义模块）· review.ts（复习内容）
 ├── utils/progress.ts               # localStorage 进度、间隔重复调度、导入导出
 ├── components/

@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/language": "^6.13.1",
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.36.5",
+    "@lezer/highlight": "^1.2.5",
     "@uiw/react-codemirror": "^4.23.13",
     "katex": "^0.16.21",
     "lucide-react": "^0.475.0",

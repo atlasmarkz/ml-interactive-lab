@@ -5,6 +5,7 @@ import { REVIEW_PART_3 } from './part3';
 import { REVIEW_PART_45 } from './part45';
 import { REVIEW_PART_5 } from './part5';
 import { EXTRA_QUIZ } from './extraQuiz';
+import { WA_DRILLS } from './waDrills';
 
 export const REVIEW_PACKS: ReviewPack[] = [
   ...REVIEW_PART_01,
@@ -12,7 +13,13 @@ export const REVIEW_PACKS: ReviewPack[] = [
   ...REVIEW_PART_3,
   ...REVIEW_PART_45,
   ...REVIEW_PART_5,
-].map((p) => ({ ...p, quiz: [...p.quiz, ...(EXTRA_QUIZ[p.lectureId] ?? [])] }));
+].map((p) => ({ ...p, quiz: [...p.quiz, ...(EXTRA_QUIZ[p.lectureId] ?? []), ...(WA_DRILLS[p.lectureId] ?? [])] }));
+
+/** "WA3 Q5" style key of a question, if it mirrors a written-assignment question. */
+export function waKey(style?: string): string | null {
+  const m = style?.match(/WA(\d)\s*(Question X|Q\w+)/);
+  return m ? `WA${m[1]} ${m[2] === 'Question X' ? 'QX' : m[2]}` : null;
+}
 
 const BY_LECTURE = new Map(REVIEW_PACKS.map((p) => [p.lectureId, p]));
 

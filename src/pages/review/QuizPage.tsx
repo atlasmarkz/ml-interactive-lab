@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ArrowRight, RotateCcw } from 'lucide-react';
-import { ALL_QUESTIONS, TaggedQuestion } from '../../data/review';
+import { ALL_QUESTIONS, TaggedQuestion, waKey } from '../../data/review';
 import { QuizKind } from '../../types/review';
 import { useProgress } from '../../utils/progress';
 import { QuizCard } from '../../components/review/QuizCard';
@@ -27,6 +27,14 @@ export const QuizPage: React.FC = () => {
     setParams(p, { replace: true });
     restart();
   };
+  const styleFilter = params.get('style') ?? '';
+  const setStyle = (v: string) => {
+    const p = new URLSearchParams(params);
+    if (v) p.set('style', v);
+    else p.delete('style');
+    setParams(p, { replace: true });
+    restart();
+  };
   const [kinds, setKinds] = useState<QuizKind[]>(['calc', 'mcq', 'short']);
   const [size, setSize] = useState(10);
   const [round, setRound] = useState(0);
@@ -47,9 +55,12 @@ export const QuizPage: React.FC = () => {
   const pool = useMemo(
     () =>
       ALL_QUESTIONS.filter(
-        (q) => (selected.length === 0 || selected.includes(q.lectureId)) && kinds.includes(q.kind)
+        (q) =>
+          (selected.length === 0 || selected.includes(q.lectureId)) &&
+          kinds.includes(q.kind) &&
+          (!styleFilter || (waKey(q.style) ?? '').startsWith(styleFilter))
       ),
-    [selected, kinds]
+    [selected, kinds, styleFilter]
   );
 
   // Fixed at session start so answering (which updates progress) doesn't reshuffle.
@@ -59,6 +70,18 @@ export const QuizPage: React.FC = () => {
     return shuffle(pool).slice(0, size);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool, mode, size, round]);
+
+  const styleOptions = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const q of ALL_QUESTIONS) {
+      const k = waKey(q.style);
+      if (!k) continue;
+      c[k] = (c[k] ?? 0) + 1;
+      const wa = k.split(' ')[0];
+      c[wa] = (c[wa] ?? 0) + 1;
+    }
+    return Object.entries(c).sort(([a], [b]) => a.localeCompare(b, 'en', { numeric: true }));
+  }, []);
 
   const current = session[pos];
   const finished = session.length > 0 && pos >= session.length;
@@ -112,6 +135,21 @@ export const QuizPage: React.FC = () => {
             </label>
           ))}
         </div>
+        <label className="inline-flex items-center gap-1.5 text-stone-600 dark:text-zinc-400">
+          WA 题型
+          <select
+            value={styleFilter}
+            onChange={(e) => setStyle(e.target.value)}
+            className="rounded border border-stone-200 bg-white px-1.5 py-0.5 dark:border-zinc-800 dark:bg-zinc-900"
+          >
+            <option value="">全部题目</option>
+            {styleOptions.map(([k, n]) => (
+              <option key={k} value={k}>
+                {k.includes(' ') ? `  ${k}` : `${k} 全部`}（{n}）
+              </option>
+            ))}
+          </select>
+        </label>
         {mode === 'random' && (
           <label className="inline-flex items-center gap-1.5 text-stone-600 dark:text-zinc-400">
             题数

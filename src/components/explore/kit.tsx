@@ -267,6 +267,7 @@ export const LineChart: React.FC<{
           ))}
         </div>
       )}
+      {yLabel && <div className="font-mono text-[11px] text-stone-500 dark:text-zinc-400">{yLabel}</div>}
       <div className="relative">
         <svg
           viewBox={`0 0 ${W} ${H}`}
@@ -293,11 +294,6 @@ export const LineChart: React.FC<{
           {xLabel && (
             <text className="viz-text" x={(pad.l + W - pad.r) / 2} y={H - 6} textAnchor="middle">
               {xLabel}
-            </text>
-          )}
-          {yLabel && (
-            <text className="viz-text" x={pad.l + 4} y={pad.t + 10}>
-              {yLabel}
             </text>
           )}
           {overlay?.(s)}
