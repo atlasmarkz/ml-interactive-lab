@@ -182,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ isDark, onToggleDark, children }
           </div>
         </header>
 
-        <main className="flex-1 px-5 sm:px-8 lg:px-12 py-10 sm:py-12 max-w-[78rem] w-full mx-auto">
+        <main className="flex-1 px-5 sm:px-8 lg:px-12 py-10 sm:py-12 max-w-[78rem] min-[1760px]:max-w-[96rem] w-full mx-auto">
           {children}
         </main>
       </div>

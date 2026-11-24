@@ -238,3 +238,19 @@ input[type='range'].viz-range {
   background: #30363d;
   border-radius: 8px;
 }
+
+/* Lecture page: reading column + TOC rail (xl), + course-progress column (≥1760px). Ordered explicitly. */
+@media (min-width: 1280px) {
+  .lecture-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 46rem) 14rem;
+    justify-content: center;
+    column-gap: 3.5rem;
+  }
+}
+@media (min-width: 1760px) {
+  .lecture-grid {
+    grid-template-columns: minmax(0, 46rem) 13rem 18rem;
+    column-gap: 3rem;
+  }
+}

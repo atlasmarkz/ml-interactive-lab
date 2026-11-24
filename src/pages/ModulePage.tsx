@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckSquare, FileText, Layers, ListChecks, Square } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckSquare, Layers, ListChecks, Square } from 'lucide-react';
+import { OverallProgress } from '../components/review/OverallProgress';
 import { LECTURES, getLectureBySlug } from '../data/lectures';
 import { ALL_CARDS, ALL_QUESTIONS, getReviewPack } from '../data/review';
 import { FigureKey, LectureModule, VerifierId } from '../types/curriculum';
@@ -134,7 +135,7 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
   const doneQs = questions.filter((q) => progress.quiz[q.id]).length;
 
   return (
-    <div className="xl:grid xl:grid-cols-[minmax(0,46rem)_14rem] xl:justify-center xl:gap-14">
+    <div className="lecture-grid">
       <ReadingProgress />
       <article className="mx-auto max-w-[46rem] space-y-16 pb-16">
         {/* ---------------- Masthead ---------------- */}
@@ -157,12 +158,6 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-stone-500 dark:text-zinc-400">
             <span className={`rounded-full border px-2.5 py-0.5 ${lec.examWeight === 'core' ? 'border-red-300 text-red-700 dark:border-red-900 dark:text-red-400' : 'border-stone-300 dark:border-zinc-700'}`}>
               {WEIGHT_LABEL[lec.examWeight]}
-            </span>
-            <span className="inline-flex flex-wrap items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5" />
-              {lec.slides.map((f) => (
-                <span key={f} className="font-mono">{f}</span>
-              ))}
             </span>
           </div>
 
@@ -481,6 +476,17 @@ export const ModulePage: React.FC<ModulePageProps> = ({ isDark }) => {
             <div>练习题 {doneQs}/{questions.length}</div>
             <a href="#review" onClick={jump('review')} className="inline-block pt-1 text-blue-700 hover:underline dark:text-blue-400">去做本讲自测 →</a>
           </div>
+          {/* Course-wide snapshot: compact here until there is room for its own column */}
+          <div className="min-[1760px]:hidden">
+            <OverallProgress currentId={lec.id} compact />
+          </div>
+        </div>
+      </aside>
+
+      {/* ---------------- Overall review progress (≥1760px) ---------------- */}
+      <aside className="no-print hidden min-[1760px]:block">
+        <div className="sticky top-20">
+          <OverallProgress currentId={lec.id} />
         </div>
       </aside>
     </div>
